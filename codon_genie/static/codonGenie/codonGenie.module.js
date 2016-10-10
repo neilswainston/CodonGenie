@@ -1,0 +1,1 @@
+var codonGenieApp = angular.module("codonGenieApp", []);
