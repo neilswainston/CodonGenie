@@ -1,56 +1,78 @@
 <!doctype html>
-<html data-ng-app="codonGenieApp" data-ng-controller="codonGenieCtrl as ctrl">
+<html data-ng-app="codonGenieApp"
+	data-ng-controller="codonGenieCtrl as ctrl">
 <head>
-	<title>CodonGenie</title>
-	<link rel="stylesheet" href="static/style.css">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-	<script	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-	<script	src="http://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.min.js"></script>
-	<script src="https://www.google.com/jsapi"></script>
-	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.js"></script>
-	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.js"></script>
-	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-route.js"></script>
-    <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-1.3.3.js"></script>
-	<script src="static/codonGenie/codonGenie.module.js"></script>
-	<script src="static/codonGenie/codonGenie.ctrl.js"></script>
-	<link rel="shortcut icon" href="static/favicon.ico">
+<title>CodonGenie</title>
+<link rel="stylesheet" href="static/style.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script src="http://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.min.js"></script>
+<script src="https://www.google.com/jsapi"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-route.js"></script>
+<script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-1.3.3.js"></script>
+<script src="static/codonGenie/codonGenie.module.js"></script>
+<script src="static/codonGenie/codonGenie.ctrl.js"></script>
+<script src="static/codonGenie/codonGenie.directive.js"></script>
+<link rel="shortcut icon" href="static/favicon.ico">
 </head>
 <body>
-<!-- Navigation bar -->
-<nav class="navbar navbar-default">
-	<div class="container-fluid">
-		<div class="navbar-header">
-			<a class="navbar-brand" href="http://www.synbiochem.co.uk">
-				<span><img alt="SYNBIOCHEM" src="static/favicon.ico"></span>
-				CodonGenie
-			</a>
+	<!-- Navigation bar -->
+	<nav class="navbar navbar-default">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="http://www.synbiochem.co.uk"> <span><img
+						alt="SYNBIOCHEM" src="static/favicon.ico"></span> CodonGenie
+				</a>
+			</div>
 		</div>
+	</nav>
+	<div class="container">
+		<form data-ng-submit="ctrl.getCodons()" class="form-horizontal"
+			role="form">
+			<fieldset data-ng-disabled="ctrl.isCalculating">
+				<div class="form-group">
+					<label class="control-label col-sm-2">Amino acids:</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control"
+							data-ng-model="ctrl.aminoAcids" placeholder="Amino acids"
+							required>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-2"></div>
+					<div class="col-sm-2">
+						<input type="submit" value="Search" class="form-control">
+					</div>
+				</div>
+			</fieldset>
+		</form>
 	</div>
-</nav>
-	
-<div class="container">
-	<form data-ng-submit="ctrl.getCodons()" class="form-horizontal" role="form">
-		<fieldset data-ng-disabled="ctrl.isCalculating">
-			<div class="form-group">
-				<label class="control-label col-sm-2">Amino acids:</label>
-				<div class="col-sm-6">
-					<input type="text" class="form-control"
-						data-ng-model="ctrl.aminoAcids"
-						placeholder="Amino acids"
-						required>
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="col-sm-2"></div>
-				<div class="col-sm-2">
-					<input type="submit" value="Search" class="form-control">
-				</div>
-			</div>
-		</fieldset>
-	</form>
-</div>
-{{ctrl.codons}}
+	<div data-ng-show="ctrl.codons" class="container">
+		<table class="table table-condensed table-striped">
+			<thead>
+				<tr>
+					<th>Codon</th>
+					<th>Amino acids</th>
+					<th>Nucleotide variants</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr data-ng-repeat="codon in ctrl.codons">
+					<td><span class="label label-default" data-container="body" data-original-title="{{codon[1]}}" tooltip>{{codon[0]}}</span></td>
+					<td>
+						<div data-ng-repeat="aa in codon[2] | orderBy: aa" class="aa">
+							<span data-ng-class="{'label label-danger': aa[0] == 'Stop', 'label label-success':  ctrl.aminoAcids.indexOf(aa[0]) > -1, 'label label-warning': ctrl.aminoAcids.indexOf(aa[0]) == -1}">{{aa[0]}} {{aa[1]}}</span>
+							&nbsp;
+						</div>
+					</td>
+					<td>{{codon[4]}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 </body>
 </html>

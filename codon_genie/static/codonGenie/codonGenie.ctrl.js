@@ -7,6 +7,8 @@ codonGenieApp.controller("codonGenieCtrl", ["$scope", "$http", "$log", function(
 	self.getCodons = function() {
 		if(self.aminoAcids) {
 			self.isCalculating = true;
+			self.codons = null;
+			
 			$http.get("/codons/" + self.aminoAcids).then(
 					function(resp) {
 						self.codons = resp.data;
