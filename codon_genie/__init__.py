@@ -9,18 +9,9 @@ To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 '''
 import json
 import os
-import re
-import sys
-import tempfile
-import traceback
-import urllib
-import urllib2
 import uuid
 
-from Bio import SeqIO
-from Bio.PDB.Entity import Entity
 from flask import Flask, jsonify, request, Response
-import libchebipy
 
 from synbiochem.utils import modify_utils
 
@@ -46,9 +37,7 @@ def home():
 def get_codons(amino_acids):
     '''Gets codons from amino_acids.'''
     codons = modify_utils.CodonSelector().optimise_codon(amino_acids)
-    return json.dumps([[list(term) if idx == 2 else term
-                        for idx, term in enumerate(codon)]
-                       for codon in codons])
+    return json.dumps(codons)
 
 
 @APP.errorhandler(Exception)
