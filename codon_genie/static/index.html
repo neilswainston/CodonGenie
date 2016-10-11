@@ -62,10 +62,12 @@
 			</thead>
 			<tbody>
 				<tr data-ng-repeat="codon in ctrl.codons">
-					<td><span class="label label-default" data-container="body" data-original-title="{{codon[1]}}" tooltip>{{codon[0]}}</span></td>
+					<td><span class="label label-default" uib-tooltip="{{ctrl.getCodonString(codon[1])}}" tooltip>{{codon[0]}}</span></td>
 					<td>
 						<div data-ng-repeat="aa in codon[2] | orderBy: aa" class="aa">
-							<span data-ng-class="{'label label-danger': aa[0] == 'Stop', 'label label-success':  ctrl.aminoAcids.indexOf(aa[0]) > -1, 'label label-warning': ctrl.aminoAcids.indexOf(aa[0]) == -1}">{{aa[0]}} {{aa[1]}}</span>
+							<span data-ng-class="{'label label-danger': aa[0] == 'Stop',
+												'label label-success':  ctrl.aminoAcids.indexOf(aa[0]) > -1,
+												'label label-warning': ctrl.aminoAcids.indexOf(aa[0]) == -1}">{{aa[0]}} {{aa[1]}}</span>
 							&nbsp;
 						</div>
 					</td>

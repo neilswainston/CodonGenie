@@ -20,4 +20,8 @@ codonGenieApp.controller("codonGenieCtrl", ["$scope", "$http", "$log", function(
 					});
 		}
 	};
+	
+	self.getCodonString = function(codon) {
+		return "[" + codon.join("][") + "]";
+	};
 }]);
