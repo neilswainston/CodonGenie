@@ -1,9 +1,9 @@
-.aa
+.aa-label
 {
 	float: left;
 }
 
-.nucl
+#amino-acids
 {
-	float: left;
+	text-transform: uppercase;
 }
