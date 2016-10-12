@@ -1,9 +1,16 @@
+#aa-input
+{
+	text-transform: uppercase;
+}
+
+.codon-genie-result-body
+{
+	max-height: 600px;
+	overflow-y: scroll;
+}
+
 .aa-label
 {
 	float: left;
 }
 
-#amino-acids
-{
-	text-transform: uppercase;
-}
