@@ -27,6 +27,7 @@ APP = Flask(__name__, static_folder=_STATIC_FOLDER)
 APP.config.from_object(__name__)
 
 _ORGANISMS = sequence_utils.get_codon_usage_organisms()
+_CODON_SELECTOR = modify_utils.CodonSelector()
 
 
 @APP.route('/')
@@ -47,7 +48,7 @@ def get_organisms(term):
 def get_codons():
     '''Gets codons from amino_acids.'''
     query = json.loads(request.data)
-    codons = modify_utils.CodonSelector().optimise_codons(query)
+    codons = _CODON_SELECTOR.optimise_codons(query)
     return json.dumps(codons)
 
 

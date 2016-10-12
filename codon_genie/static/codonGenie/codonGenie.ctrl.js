@@ -25,7 +25,14 @@ codonGenieApp.controller("codonGenieCtrl", ["$scope", "$http", "$log", function(
 	};
 	
 	self.toString = function(array) {
-		return array.join();
+		var len = array.length;
+		var formatted = [array.length];
+		
+		for(var i = 0; i < len; i++) {
+			formatted[i] = array[i][0] + " (" + array[i][1].toFixed(2) + ")";
+		}
+		
+		return formatted.join(", ");
 	};
 	
 	$scope.$watch(function() {
