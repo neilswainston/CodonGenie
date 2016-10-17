@@ -16,4 +16,4 @@ git clone https://github.com/synbiochem/CodonGenie.git
 
 6. Run start_server script:
 
-./start_server.sh
+bash start_server.sh
