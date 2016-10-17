@@ -7,4 +7,4 @@ RUN pip install --upgrade pip
 RUN pip install numpy
 RUN pip install -r requirements.txt
 ENTRYPOINT ["python"]
-CMD ["app.py"]
+CMD ["app.py", "80"]

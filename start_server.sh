@@ -5,4 +5,4 @@ if [ "$(uname)" == "Darwin" ]; then
 fi
 
 docker build -t codongenie .
-docker run --detach --publish=5000:5000 codongenie
+docker run --detach --publish=80:80 codongenie
