@@ -1,4 +1,4 @@
-codonGenieApp.controller("codonGenieCtrl", ["$scope", "$http", "$log", function($scope, $http, $log) {
+codonGenieApp.controller("codonGenieCtrl", ["$scope", "$http", "$log", "ErrorService", function($scope, $http, $log, ErrorService) {
 	var self = this;
 	self.isCalculating = false;
 	self.query = {};
@@ -16,6 +16,7 @@ codonGenieApp.controller("codonGenieCtrl", ["$scope", "$http", "$log", function(
 				},
 				function(errResp) {
 					$log.error(errResp.data.message);
+					ErrorService.open(errResp.data.message);
 					self.isCalculating = false;
 				});
 	};

@@ -9,10 +9,11 @@ To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 '''
 import json
 import os
+import sys
+import traceback
 import uuid
 
 from flask import Flask, jsonify, request, Response
-
 from synbiochem.utils import modify_utils, sequence_utils
 
 
@@ -55,6 +56,8 @@ def get_codons():
 @APP.errorhandler(Exception)
 def handle_exception(err):
     '''Exception handling method.'''
+    exc_type, exc_value, exc_traceback = sys.exc_info()
+    traceback.print_exception(exc_type, exc_value, exc_traceback)
     response = jsonify({'message': err.__class__.__name__ + ': ' + str(err)})
     response.status_code = 500
     return response
