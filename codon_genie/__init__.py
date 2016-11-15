@@ -1,7 +1,7 @@
 '''
-PartsGenie (c) University of Manchester 2015
+CodonGenie (c) University of Manchester 2016
 
-PartsGenie is licensed under the MIT License.
+CodonGenie is licensed under the MIT License.
 
 To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 
@@ -14,7 +14,9 @@ import traceback
 import uuid
 
 from flask import Flask, jsonify, request, Response
-from synbiochem.utils import modify_utils, sequence_utils
+
+from codon_genie.codon_utils import CodonSelector
+from synbiochem.utils import sequence_utils
 
 
 # Configuration:
@@ -28,12 +30,12 @@ APP = Flask(__name__, static_folder=_STATIC_FOLDER)
 APP.config.from_object(__name__)
 
 _ORGANISMS = sequence_utils.get_codon_usage_organisms()
-_CODON_SELECTOR = modify_utils.CodonSelector()
+_CODON_SELECTOR = CodonSelector()
 
 
 @APP.route('/')
 def home():
-    '''Renders homepage.'''
+
     return APP.send_static_file('index.html')
 
 

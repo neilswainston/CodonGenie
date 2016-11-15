@@ -2,7 +2,7 @@
 
 1. Create instance from client:
 
-gcloud compute instances create docker-instance --image-family gci-stable --image-project google-containers --zone europe-west1-d --machine-type n1-standard-1
+gcloud compute instances create docker-instance --image-family gci-stable --image-project google-containers --zone europe-west1-b --machine-type n1-standard-1
 
 2. Set External IP to static.
 
