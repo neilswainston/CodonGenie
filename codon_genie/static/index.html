@@ -39,13 +39,14 @@
 	  		<div class="panel-heading">Query</div>
 	  		<div class="result-panel panel-body">
 	  			<form data-ng-submit="ctrl.submit()" class="form-horizontal"
-					role="form">
+					role="form" name="form">
 					<fieldset data-ng-disabled="ctrl.isCalculating">
 						<div class="form-group">
 							<label class="control-label col-sm-4">Amino acids:</label>
 							<div class="col-sm-6">
 								<input type="text" class="form-control" id="aa-input"
 									data-ng-model="ctrl.query.aminoAcids" placeholder="Amino acids"
+									data-ng-pattern="ctrl.aa_pattern"
 									autocomplete="off" required>
 							</div>
 						</div>
@@ -68,7 +69,8 @@
 						<div class="form-group">
 							<div class="col-sm-4"></div>
 							<div class="col-sm-4">
-								<input type="submit" value="Search" class="form-control">
+								<input type="submit" value="Search" class="form-control"
+								data-ng-disabled="form.$invalid">
 							</div>
 						</div>
 					</fieldset>

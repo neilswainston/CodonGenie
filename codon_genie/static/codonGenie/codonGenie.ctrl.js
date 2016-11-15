@@ -2,6 +2,7 @@ codonGenieApp.controller("codonGenieCtrl", ["$scope", "$http", "$log", "ErrorSer
 	var self = this;
 	self.isCalculating = false;
 	self.query = {};
+	self.aa_pattern = "[qwertyipasdfghklcvnmQWERTYIPASDFGHKLCVNM]*";
 	self.codons = null;
 	
 	self.submit = function() {
