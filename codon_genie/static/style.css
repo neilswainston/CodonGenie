@@ -1,15 +1,4 @@
-.horizontal
-{
-	float: left;
-}
-
 .uppercase
 {
 	text-transform: uppercase;
-}
-
-.codon-genie-result-body
-{
-	max-height: 600px;
-	overflow-y: scroll;
 }

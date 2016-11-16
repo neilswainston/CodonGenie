@@ -4,11 +4,12 @@ codonGenieApp.controller("codonGenieCtrl", ["$scope", "$http", "$log", "ErrorSer
 	self.query = {"mode": "aminoAcids"};
 	self.aa_pattern = "[qwertyipasdfghklcvnmQWERTYIPASDFGHKLCVNM]*";
 	self.codon_pattern = "[acgtmrwsykvhdbnACGTMRWSYKVHDBN]{3}";
-	self.codons = null;
+	
+	var results = null;
 	
 	self.submit = function() {
 		self.isCalculating = true;
-		self.codons = null;
+		results = null;
 		
 		if(self.query.mode == "aminoAcids") {
 			self.query.aminoAcids = self.query.aminoAcids.toUpperCase()
@@ -22,7 +23,7 @@ codonGenieApp.controller("codonGenieCtrl", ["$scope", "$http", "$log", "ErrorSer
 		
 		$http.get("codons", {params: params}).then(
 				function(resp) {
-					self.codons = resp.data;
+					results = resp.data;
 					self.isCalculating = false;
 				},
 				function(errResp) {
@@ -30,6 +31,10 @@ codonGenieApp.controller("codonGenieCtrl", ["$scope", "$http", "$log", "ErrorSer
 					ErrorService.open(errResp.data.message);
 					self.isCalculating = false;
 				});
+	};
+	
+	self.results = function() {
+		return results;
 	};
 	
 	self.getCodonString = function(codon) {
@@ -51,6 +56,6 @@ codonGenieApp.controller("codonGenieCtrl", ["$scope", "$http", "$log", "ErrorSer
 		return self.query;
 	},               
 	function(values) {
-		self.codons = null;
+		results = null;
 	}, true);
 }]);

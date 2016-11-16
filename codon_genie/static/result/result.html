@@ -1,0 +1,33 @@
+<link rel="stylesheet" href="static/result/result.css">
+<div class="panel panel-default">
+	<div class="panel-heading">Result</div>
+	<div class="result-panel panel-body result-body">
+		<table class="table table-condensed table-striped">
+			<thead>
+				<tr>
+					<th>Codon</th>
+					<th>Amino acids</th>
+					<th class="text-right">Codons</th>
+					<th class="text-right">Score</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr data-ng-repeat="result in results()">
+					<td><span class="label label-default" uib-tooltip="{{result[1]}}">{{result[0]}}</span></td>
+					<td>
+						<div data-ng-repeat="aa in result[3]" class="horizontal">
+							<span data-ng-class="{'label label-danger': aa[0] == 'Stop',
+												'label label-success': ctrl.query.mode == 'aminoAcids' && ctrl.query.aminoAcids.indexOf(aa[0]) > -1,
+												'label label-warning': ctrl.query.mode == 'aminoAcids' && ctrl.query.aminoAcids.indexOf(aa[0]) == -1,
+												'label label-default': ctrl.query.mode == 'result'}"
+								uib-tooltip="{{ctrl.toString(aa[1])}}">{{aa[0]}} {{aa[1].length}}</span>
+							&nbsp;
+						</div>
+					</td>
+					<td class="text-right">{{result[2].length}}</td>
+					<td class="text-right">{{result[4] | number: 2}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

@@ -1,1 +1,1 @@
-var codonGenieApp = angular.module("codonGenieApp", ["ui.bootstrap", "errorApp", "typeaheadApp"]);
+var codonGenieApp = angular.module("codonGenieApp", ["ui.bootstrap", "errorApp", "resultApp", "typeaheadApp"]);

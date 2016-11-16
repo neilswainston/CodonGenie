@@ -1,0 +1,1 @@
+var resultApp = angular.module("resultApp", ["ui.bootstrap", "ui.bootstrap.modal"]);
