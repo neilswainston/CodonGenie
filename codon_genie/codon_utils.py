@@ -51,22 +51,24 @@ class CodonSelector(object):
 
         return self.__format_results(results)
 
+    def analyse_codon(self, ambig_codon, tax_id):
+        '''Analyses an ambiguous codon.'''
+        results = [[self.__analyse_codon(ambig_codon.upper(), tax_id)]]
+        return self.__format_results(results)
+
     def __analyse(self, combo, tax_id, req_amino_acids):
         '''Analyses a combo, returning nucleotides, ambiguous nucleotides,
         amino acids encodes, and number of variants.'''
-        transpose = [sorted(list(term))
-                     for term in map(set, zip(*combo))]
+        transpose = [sorted(list(term)) for term in map(set, zip(*combo))]
 
         nucls = [[''.join(sorted(list(set(pos))))]
-                 for pos in transpose[:2]] + \
-            [_optimise_pos_3(transpose[2])]
+                 for pos in transpose[:2]] + [_optimise_pos_3(transpose[2])]
 
         ambig_codons = [''.join([sequence_utils.NUCL_CODES[term]
                                  for term in cdn])
                         for cdn in itertools.product(*nucls)]
 
-        results = [self.__analyse_ambig_codon(ambig_codon, tax_id,
-                                              req_amino_acids)
+        results = [self.__analyse_codon(ambig_codon, tax_id, req_amino_acids)
                    for ambig_codon in ambig_codons]
 
         return results
@@ -78,15 +80,17 @@ class CodonSelector(object):
 
         return self.__codon_opt[tax_id]
 
-    def __analyse_ambig_codon(self, ambig_codon, tax_id, req_amino_acids=None):
+    def __analyse_codon(self, ambig_codon, tax_id, req_amino_acids=None):
         '''Analyses a given ambiguous codon.'''
+        if req_amino_acids is None:
+            req_amino_acids = []
+
         codon_opt = self.__get_codon_opt(tax_id)
 
         ambig_codon_nucls = [sequence_utils.INV_NUCL_CODES[nucl]
                              for nucl in ambig_codon]
 
-        codons = [''.join(c)
-                  for c in itertools.product(*ambig_codon_nucls)]
+        codons = [''.join(c) for c in itertools.product(*ambig_codon_nucls)]
 
         amino_acids = defaultdict(list)
 
@@ -120,10 +124,9 @@ class CodonSelector(object):
 
     def __format_results(self, results):
         '''Formats results.'''
-        results = list(set([codon for result in results
-                            for codon in result]))
+        results = list(set([codon for result in results for codon in result]))
         results.sort(key=operator.itemgetter(3), reverse=True)
-        return result
+        return results
 
 
 def _optimise_pos_3(options):
