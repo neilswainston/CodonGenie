@@ -40,25 +40,20 @@ class CodonSelector(object):
     def optimise_codons(self, amino_acids, organism_id):
         '''Optimises codon selection.'''
         req_amino_acids = set(amino_acids.upper())
-        codons = self.__get_codons(req_amino_acids)
-        combos = [combo for combo in itertools.product(*codons)]
-        analyses = [self.__analyse(combo, organism_id,
-                                   req_amino_acids)
-                    for combo in combos]
-        analyses = list(set([codon for analysis in analyses
-                             for codon in analysis]))
-        analyses.sort(key=operator.itemgetter(5), reverse=True)
-        return analyses
 
-    def __get_codons(self, amino_acids):
-        '''Gets codons for a list of amino acids.'''
-        return [sequence_utils.CODONS[amino_acid]
-                for amino_acid in amino_acids]
+        codons = [sequence_utils.CODONS[amino_acid]
+                  for amino_acid in req_amino_acids]
+
+        combos = [combo for combo in itertools.product(*codons)]
+
+        results = [self.__analyse(combo, organism_id, req_amino_acids)
+                   for combo in combos]
+
+        return self.__format_results(results)
 
     def __analyse(self, combo, tax_id, req_amino_acids):
         '''Analyses a combo, returning nucleotides, ambiguous nucleotides,
         amino acids encodes, and number of variants.'''
-        codon_opt = self.__get_codon_opt(tax_id)
         transpose = [sorted(list(term))
                      for term in map(set, zip(*combo))]
 
@@ -66,33 +61,15 @@ class CodonSelector(object):
                  for pos in transpose[:2]] + \
             [_optimise_pos_3(transpose[2])]
 
-        ambig_codons = [[''.join([sequence_utils.NUCL_CODES[term]
-                                  for term in cdn]),
-                         cdn,
-                         [''.join(c)
-                          for c in itertools.product(*cdn)]]
+        ambig_codons = [''.join([sequence_utils.NUCL_CODES[term]
+                                 for term in cdn])
                         for cdn in itertools.product(*nucls)]
 
-        for ambig_codon in ambig_codons:
-            num_codons = len(ambig_codon[2])
-            amino_acids = defaultdict(list)
+        results = [self.__analyse_ambig_codon(ambig_codon, tax_id,
+                                              req_amino_acids)
+                   for ambig_codon in ambig_codons]
 
-            for codon in ambig_codon[2]:
-                a_a = self.__codon_to_aa.get(codon, 'Stop')
-                amino_acids[a_a].append((codon,
-                                         codon_opt.get_codon_prob(codon)))
-
-            ambig_codon[2] = tuple([(key,
-                                     tuple(sorted(value,
-                                                  key=lambda prob: prob[1],
-                                                  reverse=True)))
-                                    for key, value in amino_acids.iteritems()])
-
-            ambig_codon.append(len(amino_acids))
-            ambig_codon.append(num_codons)
-            ambig_codon.append(self.__score(amino_acids, req_amino_acids))
-
-        return [tuple(ambig_codon) for ambig_codon in ambig_codons]
+        return results
 
     def __get_codon_opt(self, tax_id):
         '''Gets the CodonOptimiser for the supplied taxonomy.'''
@@ -101,7 +78,37 @@ class CodonSelector(object):
 
         return self.__codon_opt[tax_id]
 
+    def __analyse_ambig_codon(self, ambig_codon, tax_id, req_amino_acids=None):
+        '''Analyses a given ambiguous codon.'''
+        codon_opt = self.__get_codon_opt(tax_id)
+
+        ambig_codon_nucls = [sequence_utils.INV_NUCL_CODES[nucl]
+                             for nucl in ambig_codon]
+
+        codons = [''.join(c)
+                  for c in itertools.product(*ambig_codon_nucls)]
+
+        amino_acids = defaultdict(list)
+
+        for codon in codons:
+            a_a = self.__codon_to_aa.get(codon, 'Stop')
+            amino_acids[a_a].append((codon,
+                                     codon_opt.get_codon_prob(codon)))
+
+        result = (ambig_codon,
+                  tuple(ambig_codon_nucls),
+                  tuple(codons),
+                  tuple([(key, tuple(sorted(value,
+                                            key=lambda prob: prob[1],
+                                            reverse=True)))
+                         for key, value in amino_acids.iteritems()]),
+                  self.__score(amino_acids, req_amino_acids)
+                  )
+
+        return result
+
     def __score(self, amino_acids, req_amino_acids):
+        '''Scores a given amino acids collection.'''
         scores = [value[1] * (self.__wanted_pen
                               if idx == 0 and amino_acid in req_amino_acids
                               else (self.__stop_pen if amino_acid is 'Stop'
@@ -110,6 +117,13 @@ class CodonSelector(object):
                   for idx, value in enumerate(values)]
 
         return sum(scores)
+
+    def __format_results(self, results):
+        '''Formats results.'''
+        results = list(set([codon for result in results
+                            for codon in result]))
+        results.sort(key=operator.itemgetter(3), reverse=True)
+        return result
 
 
 def _optimise_pos_3(options):
