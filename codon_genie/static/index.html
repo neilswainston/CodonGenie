@@ -44,10 +44,25 @@
 						<div class="form-group">
 							<label class="control-label col-sm-4">Amino acids:</label>
 							<div class="col-sm-6">
-								<input type="text" class="form-control" id="aa-input"
+								<input type="radio" data-ng-model="ctrl.query.mode" value="aminoAcids" class="horizontal"></input>
+								<input type="text" class="form-control uppercase"
 									data-ng-model="ctrl.query.aminoAcids" placeholder="Amino acids"
 									data-ng-pattern="ctrl.aa_pattern"
-									autocomplete="off" required>
+									data-ng-disabled="ctrl.query.mode != 'aminoAcids'"
+									data-ng-required="ctrl.query.mode == 'aminoAcids'"
+									autocomplete="off">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-sm-4">Codon:</label>
+							<div class="col-sm-6">
+								<input type="radio" data-ng-model="ctrl.query.mode" value="codon"></input>
+								<input type="text" class="form-control uppercase" 
+									data-ng-model="ctrl.query.codon" placeholder="Codon"
+									data-ng-pattern="ctrl.codon_pattern"
+									data-ng-disabled="ctrl.query.mode != 'codon'"
+									data-ng-required="ctrl.query.mode == 'codon'"
+									autocomplete="off">
 							</div>
 						</div>
 						<div class="form-group">
@@ -88,24 +103,27 @@
 						<tr>
 							<th>Codon</th>
 							<th>Amino acids</th>
-							<th class="text-right">Variants</th>
-							<th class="text-right">Score</th>
+							<th class="text-right">Amino acids</th>
+							<th class="text-right">Codons</th>
+							<th class="text-right" data-ng-show="ctrl.query.mode == 'aminoAcids'">Score</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr data-ng-repeat="codon in ctrl.codons">
 							<td><span class="label label-default" uib-tooltip="{{ctrl.getCodonString(codon[1])}}">{{codon[0]}}</span></td>
 							<td>
-								<div data-ng-repeat="aa in codon[3] | orderBy: aa" class="aa-label">
-									<span data-ng-class="{'label label-danger': aa[0] == 'Stop',
-														'label label-success':  ctrl.query.aminoAcids.indexOf(aa[0]) > -1,
-														'label label-warning': ctrl.query.aminoAcids.indexOf(aa[0]) == -1}"
+								<div data-ng-repeat="aa in codon[3] | orderBy: aa" class="horizontal">
+									<span data-ng-class="{'label label-danger': ctrl.query.mode == 'aminoAcids' && aa[0] == 'Stop',
+														'label label-success':  ctrl.query.mode == 'aminoAcids' && ctrl.query.aminoAcids.indexOf(aa[0]) > -1,
+														'label label-warning': ctrl.query.mode == 'aminoAcids' && ctrl.query.aminoAcids.indexOf(aa[0]) == -1,
+														'label label-default': ctrl.query.mode == 'codon'}"
 										uib-tooltip="{{ctrl.toString(aa[1])}}">{{aa[0]}} {{aa[1].length}}</span>
 									&nbsp;
 								</div>
 							</td>
+							<td class="text-right">{{codon[3].length}}</td>
 							<td class="text-right">{{codon[2].length}}</td>
-							<td class="text-right">{{codon[4] | number: 2}}</td>
+							<td class="text-right" data-ng-show="ctrl.query.mode == 'aminoAcids'">{{codon[4] | number: 2}}</td>
 						</tr>
 					</tbody>
 				</table>

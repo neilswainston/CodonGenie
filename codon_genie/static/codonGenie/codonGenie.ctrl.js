@@ -1,18 +1,26 @@
 codonGenieApp.controller("codonGenieCtrl", ["$scope", "$http", "$log", "ErrorService", function($scope, $http, $log, ErrorService) {
 	var self = this;
 	self.isCalculating = false;
-	self.query = {};
+	self.query = {"mode": "aminoAcids"};
 	self.aa_pattern = "[qwertyipasdfghklcvnmQWERTYIPASDFGHKLCVNM]*";
+	self.codon_pattern = "[acgtmrwsykvhdbnACGTMRWSYKVHDBN]{3}";
 	self.codons = null;
 	
 	self.submit = function() {
 		self.isCalculating = true;
 		self.codons = null;
-		self.query.aminoAcids = self.query.aminoAcids.toUpperCase();
 		
-		$http.get("/codons",
-			{params: {'aminoAcids': self.query['aminoAcids'],
-				'organism': self.query['organism']['id']}}).then(
+		if(self.query.mode == "aminoAcids") {
+			self.query.aminoAcids = self.query.aminoAcids.toUpperCase()
+			params = {"aminoAcids": self.query.aminoAcids,
+				"organism": self.query["organism"]["id"]}
+		}
+		else {
+			params = {"codon": self.query.codon,
+				"organism": self.query["organism"]["id"]}
+		}
+		
+		$http.get("codons", {params: params}).then(
 				function(resp) {
 					self.codons = resp.data;
 					self.isCalculating = false;

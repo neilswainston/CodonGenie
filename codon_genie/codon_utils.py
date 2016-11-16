@@ -11,7 +11,6 @@ To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 # pylint: disable=too-few-public-methods
 from collections import defaultdict
 import itertools
-import operator
 
 from synbiochem.utils import sequence_utils
 from synbiochem.utils.sequence_utils import CodonOptimiser
@@ -106,26 +105,27 @@ class CodonSelector(object):
                                             key=lambda prob: prob[1],
                                             reverse=True)))
                          for key, value in amino_acids.iteritems()]),
-                  self.__score(amino_acids, req_amino_acids)
+                  self.__score(amino_acids, req_amino_acids),
                   )
 
         return result
 
     def __score(self, amino_acids, req_amino_acids):
         '''Scores a given amino acids collection.'''
-        scores = [value[1] * (self.__wanted_pen
-                              if idx == 0 and amino_acid in req_amino_acids
-                              else (self.__stop_pen if amino_acid is 'Stop'
-                                    else self.__unwanted_pen))
-                  for amino_acid, values in amino_acids.iteritems()
-                  for idx, value in enumerate(values)]
+        if len(req_amino_acids) == 0:
+            return 0
 
-        return sum(scores)
+        scores = [value[1]
+                  for amino_acid, values in amino_acids.iteritems()
+                  for value in values
+                  if amino_acid in req_amino_acids]
+
+        return sum(scores) / float(len(scores))
 
     def __format_results(self, results):
         '''Formats results.'''
         results = list(set([codon for result in results for codon in result]))
-        results.sort(key=operator.itemgetter(3), reverse=True)
+        results.sort(key=lambda x: (len(x[2]), -x[4]))
         return results
 
 

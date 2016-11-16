@@ -1,4 +1,9 @@
-#aa-input
+.horizontal
+{
+	float: left;
+}
+
+.uppercase
 {
 	text-transform: uppercase;
 }
@@ -8,9 +13,3 @@
 	max-height: 600px;
 	overflow-y: scroll;
 }
-
-.aa-label
-{
-	float: left;
-}
-

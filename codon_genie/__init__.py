@@ -49,17 +49,13 @@ def get_organisms(term):
 
 @APP.route('/codons')
 def get_codons():
-    '''Gets codons from amino_acids.'''
-    codons = _CODON_SELECTOR.optimise_codons(request.args['aminoAcids'],
-                                             request.args['organism'])
-    return json.dumps(codons)
-
-
-@APP.route('/codon')
-def analyse_codon():
-    '''Gets codons from amino_acids.'''
-    codons = _CODON_SELECTOR.analyse_codon(request.args['codon'],
-                                           request.args['organism'])
+    '''Gets codons.'''
+    if 'aminoAcids' in request.args:
+        codons = _CODON_SELECTOR.optimise_codons(request.args['aminoAcids'],
+                                                 request.args['organism'])
+    else:
+        codons = _CODON_SELECTOR.analyse_codon(request.args['codon'],
+                                               request.args['organism'])
     return json.dumps(codons)
 
 
