@@ -10,7 +10,9 @@ codonGenieApp.controller("codonGenieCtrl", ["$scope", "$http", "$log", "ErrorSer
 		self.codons = null;
 		self.query.aminoAcids = self.query.aminoAcids.toUpperCase();
 		
-		$http.post("/codons/", self.query).then(
+		$http.get("/codons",
+			{params: {'aminoAcids': self.query['aminoAcids'],
+				'organism': self.query['organism']['id']}}).then(
 				function(resp) {
 					self.codons = resp.data;
 					self.isCalculating = false;

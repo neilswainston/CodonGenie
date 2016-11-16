@@ -47,11 +47,11 @@ def get_organisms(term):
                        if term.lower() in name.lower()])
 
 
-@APP.route('/codons/', methods=['POST'])
+@APP.route('/codons', methods=['GET'])
 def get_codons():
     '''Gets codons from amino_acids.'''
-    query = json.loads(request.data)
-    codons = _CODON_SELECTOR.optimise_codons(query)
+    codons = _CODON_SELECTOR.optimise_codons(request.args['aminoAcids'],
+                                             request.args['organism'])
     return json.dumps(codons)
 
 

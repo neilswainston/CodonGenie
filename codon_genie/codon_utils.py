@@ -37,12 +37,12 @@ class CodonSelector(object):
 
         self.__codon_opt = {}
 
-    def optimise_codons(self, query):
+    def optimise_codons(self, amino_acids, organism_id):
         '''Optimises codon selection.'''
-        req_amino_acids = set(query['aminoAcids'].upper())
+        req_amino_acids = set(amino_acids.upper())
         codons = self.__get_codons(req_amino_acids)
         combos = [combo for combo in itertools.product(*codons)]
-        analyses = [self.__analyse(combo, query['organism']['id'],
+        analyses = [self.__analyse(combo, organism_id,
                                    req_amino_acids)
                     for combo in combos]
         analyses = list(set([codon for analysis in analyses
