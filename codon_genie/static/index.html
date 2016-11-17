@@ -46,7 +46,7 @@
 						<div class="form-group">
 							<label class="control-label col-sm-4">Amino acids:</label>
 							<div class="col-sm-6">
-								<input type="radio" data-ng-model="ctrl.query.mode" value="aminoAcids" class="horizontal"></input>
+								<input type="radio" data-ng-model="ctrl.query.mode" value="aminoAcids"></input>
 								<input type="text" class="form-control uppercase"
 									data-ng-model="ctrl.query.aminoAcids" placeholder="Amino acids"
 									data-ng-pattern="ctrl.aa_pattern"
@@ -97,7 +97,10 @@
 	</div>
 	
 	<div class="col-md-8" data-ng-show="ctrl.results()">
-		<result-panel results="ctrl.results()"></result-panel>
+		<result-panel
+			results="ctrl.results()"
+			to-string="ctrl.toString()">
+		</result-panel>
 	</div>
 </body>
 </html>

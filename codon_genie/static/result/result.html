@@ -20,7 +20,7 @@
 												'label label-success': ctrl.query.mode == 'aminoAcids' && ctrl.query.aminoAcids.indexOf(aa[0]) > -1,
 												'label label-warning': ctrl.query.mode == 'aminoAcids' && ctrl.query.aminoAcids.indexOf(aa[0]) == -1,
 												'label label-default': ctrl.query.mode == 'result'}"
-								uib-tooltip="{{ctrl.toString(aa[1])}}">{{aa[0]}} {{aa[1].length}}</span>
+								uib-tooltip="{{toString(aa[1])}}">{{aa[0]}} {{aa[1].length}}</span>
 							&nbsp;
 						</div>
 					</td>

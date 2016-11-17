@@ -7,8 +7,6 @@ To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 
 @author:  neilswainston
 '''
-# pylint: disable=bad-builtin
-# pylint: disable=too-few-public-methods
 from collections import defaultdict
 import itertools
 
@@ -20,16 +18,10 @@ import Bio.Data.CodonTable as CodonTable
 class CodonSelector(object):
     '''Class to optimise codon selection.'''
 
-    def __init__(self, table_id=1, wanted_pen=3, degen_pen=-1, unwanted_pen=-3,
-                 stop_pen=-10):
+    def __init__(self, table_id=1):
         self.__codon_to_aa = \
             CodonTable.unambiguous_dna_by_id[table_id].forward_table
         self.__aa_to_codon = defaultdict(list)
-
-        self.__wanted_pen = wanted_pen
-        self.__degen_pen = degen_pen
-        self.__unwanted_pen = unwanted_pen
-        self.__stop_pen = stop_pen
 
         for codon, amino_acid in self.__codon_to_aa.iteritems():
             self.__aa_to_codon[amino_acid].append(codon)
@@ -48,12 +40,12 @@ class CodonSelector(object):
         results = [self.__analyse(combo, organism_id, req_amino_acids)
                    for combo in combos]
 
-        return self.__format_results(results)
+        return _format_results(results)
 
     def analyse_codon(self, ambig_codon, tax_id):
         '''Analyses an ambiguous codon.'''
         results = [[self.__analyse_codon(ambig_codon.upper(), tax_id)]]
-        return self.__format_results(results)
+        return _format_results(results)
 
     def __analyse(self, combo, tax_id, req_amino_acids):
         '''Analyses a combo, returning nucleotides, ambiguous nucleotides,
@@ -105,28 +97,10 @@ class CodonSelector(object):
                                             key=lambda prob: prob[1],
                                             reverse=True)))
                          for key, value in amino_acids.iteritems()]),
-                  self.__score(amino_acids, req_amino_acids),
+                  _analyse_amino_acids(amino_acids, req_amino_acids),
                   )
 
         return result
-
-    def __score(self, amino_acids, req_amino_acids):
-        '''Scores a given amino acids collection.'''
-        if len(req_amino_acids) == 0:
-            return 0
-
-        scores = [value[1]
-                  for amino_acid, values in amino_acids.iteritems()
-                  for value in values
-                  if amino_acid in req_amino_acids]
-
-        return sum(scores) / float(len(scores))
-
-    def __format_results(self, results):
-        '''Formats results.'''
-        results = list(set([codon for result in results for codon in result]))
-        results.sort(key=lambda x: (len(x[2]), -x[4]))
-        return results
 
 
 def _optimise_pos_3(options):
@@ -134,3 +108,22 @@ def _optimise_pos_3(options):
                         for opt in itertools.product(*options)]))
     options.sort(key=len)
     return [''.join(opt) for opt in options]
+
+
+def _analyse_amino_acids(amino_acids, req_amino_acids):
+    '''Scores a given amino acids collection.'''
+    if len(req_amino_acids) == 0:
+        return 0
+
+    scores = [sum([value[1] for value in values])
+              for amino_acid, values in amino_acids.iteritems()
+              if amino_acid in req_amino_acids]
+
+    return sum(scores) / float(len(scores))
+
+
+def _format_results(results):
+    '''Formats results.'''
+    results = list(set([codon for result in results for codon in result]))
+    results.sort(key=lambda x: (len(x[2]), -x[4]))
+    return results

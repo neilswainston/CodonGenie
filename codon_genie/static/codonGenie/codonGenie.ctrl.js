@@ -37,10 +37,6 @@ codonGenieApp.controller("codonGenieCtrl", ["$scope", "$http", "$log", "ErrorSer
 		return results;
 	};
 	
-	self.getCodonString = function(codon) {
-		return "[" + codon.join("][") + "]";
-	};
-	
 	self.toString = function(array) {
 		var len = array.length;
 		var formatted = [array.length];

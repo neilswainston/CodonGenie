@@ -35,7 +35,7 @@ _CODON_SELECTOR = CodonSelector()
 
 @APP.route('/')
 def home():
-
+    '''Serves homepage.'''
     return APP.send_static_file('index.html')
 
 
