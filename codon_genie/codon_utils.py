@@ -74,7 +74,7 @@ class CodonSelector(object):
     def __analyse_codon(self, ambig_codon, tax_id, req_amino_acids=None):
         '''Analyses a given ambiguous codon.'''
         if req_amino_acids is None:
-            req_amino_acids = []
+            req_amino_acids = 'QWERTYIPASDFGHKLCVNM'
 
         codon_opt = self.__get_codon_opt(tax_id)
 
@@ -90,15 +90,13 @@ class CodonSelector(object):
             amino_acids[a_a].append((codon,
                                      codon_opt.get_codon_prob(codon)))
 
+        amino_acids, score = _analyse_amino_acids(amino_acids, req_amino_acids)
+
         result = (ambig_codon,
                   tuple(ambig_codon_nucls),
                   tuple(codons),
-                  tuple([(key, tuple(sorted(value,
-                                            key=lambda prob: prob[1],
-                                            reverse=True)))
-                         for key, value in amino_acids.iteritems()]),
-                  _analyse_amino_acids(amino_acids, req_amino_acids),
-                  )
+                  amino_acids,
+                  score)
 
         return result
 
@@ -112,14 +110,19 @@ def _optimise_pos_3(options):
 
 def _analyse_amino_acids(amino_acids, req_amino_acids):
     '''Scores a given amino acids collection.'''
-    if len(req_amino_acids) == 0:
-        return 0
-
     scores = [sum([value[1] for value in values])
               for amino_acid, values in amino_acids.iteritems()
               if amino_acid in req_amino_acids]
 
-    return sum(scores) / float(len(scores))
+    for amino_acid, values in amino_acids.iteritems():
+        amino_acids[amino_acid] = (tuple(values), -1 if amino_acid == 'Stop'
+                                   else (1 if amino_acid in req_amino_acids
+                                         else 0))
+
+    amino_acids = tuple(sorted(amino_acids.items(),
+                               key=lambda x: (-x[1][1], x[0])))
+
+    return amino_acids, sum(scores) / float(len(scores))
 
 
 def _format_results(results):

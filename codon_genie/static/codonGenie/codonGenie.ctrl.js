@@ -37,17 +37,6 @@ codonGenieApp.controller("codonGenieCtrl", ["$scope", "$http", "$log", "ErrorSer
 		return results;
 	};
 	
-	self.toString = function(array) {
-		var len = array.length;
-		var formatted = [array.length];
-		
-		for(var i = 0; i < len; i++) {
-			formatted[i] = array[i][0] + " (" + array[i][1].toFixed(2) + ")";
-		}
-		
-		return formatted.join(", ");
-	};
-	
 	$scope.$watch(function() {
 		return self.query;
 	},               

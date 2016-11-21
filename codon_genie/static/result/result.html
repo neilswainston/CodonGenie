@@ -7,7 +7,7 @@
 				<tr>
 					<th>Codon</th>
 					<th>Amino acids</th>
-					<th class="text-right">Codons</th>
+					<th class="text-right">Variants</th>
 					<th class="text-right">Score</th>
 				</tr>
 			</thead>
@@ -16,11 +16,10 @@
 					<td><span class="label label-default" uib-tooltip="{{result[1]}}">{{result[0]}}</span></td>
 					<td>
 						<div data-ng-repeat="aa in result[3]" class="horizontal">
-							<span data-ng-class="{'label label-danger': aa[0] == 'Stop',
-												'label label-success': ctrl.query.mode == 'aminoAcids' && ctrl.query.aminoAcids.indexOf(aa[0]) > -1,
-												'label label-warning': ctrl.query.mode == 'aminoAcids' && ctrl.query.aminoAcids.indexOf(aa[0]) == -1,
-												'label label-default': ctrl.query.mode == 'result'}"
-								uib-tooltip="{{toString(aa[1])}}">{{aa[0]}} {{aa[1].length}}</span>
+							<span data-ng-class="{'label label-danger': aa[1][1] == -1,
+												'label label-success': aa[1][1] == 1,
+												'label label-warning': aa[1][1] == 0}"
+								uib-tooltip="{{toString(aa[1][0])}}">{{aa[0]}} {{aa[1].length}}</span>
 							&nbsp;
 						</div>
 					</td>
