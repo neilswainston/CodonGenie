@@ -38,15 +38,24 @@
 	
 	<div class="col-md-4">
 		<div class="panel panel-default">
+			<!--
 	  		<div class="panel-heading">Query</div>
+	  		-->
 	  		<div class="result-panel panel-body">
-	  			<form data-ng-submit="ctrl.submit()" class="form-horizontal"
+	  			<ul class="nav nav-tabs" id="app-tags"">
+					<li role="presentation" data-ng-class="{active: ctrl.query.mode == 'aminoAcids'}">
+						<a data-ng-click="ctrl.query.mode = 'aminoAcids'">Design</a>
+					</li>
+					<li role="presentation" data-ng-class="{active: ctrl.query.mode == 'codon'}">
+						<a data-ng-click="ctrl.query.mode = 'codon'">Analyse</a>
+					</li>
+				</ul>
+				<form data-ng-submit="ctrl.submit()" class="form-horizontal"
 					role="form" name="form">
 					<fieldset data-ng-disabled="ctrl.isCalculating">
-						<div class="form-group">
+						<div data-ng-show="ctrl.query.mode == 'aminoAcids'" class="form-group">
 							<label class="control-label col-sm-4">Amino acids:</label>
 							<div class="col-sm-6">
-								<input type="radio" data-ng-model="ctrl.query.mode" value="aminoAcids"></input>
 								<input type="text" class="form-control uppercase"
 									data-ng-model="ctrl.query.aminoAcids" placeholder="Amino acids"
 									data-ng-pattern="ctrl.aa_pattern"
@@ -55,10 +64,9 @@
 									autocomplete="off">
 							</div>
 						</div>
-						<div class="form-group">
+						<div data-ng-show="ctrl.query.mode == 'codon'" class="form-group">
 							<label class="control-label col-sm-4">Codon:</label>
 							<div class="col-sm-6">
-								<input type="radio" data-ng-model="ctrl.query.mode" value="codon"></input>
 								<input type="text" class="form-control uppercase" 
 									data-ng-model="ctrl.query.codon" placeholder="Codon"
 									data-ng-pattern="ctrl.codon_pattern"
