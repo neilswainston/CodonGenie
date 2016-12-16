@@ -10,8 +10,9 @@ To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 from collections import defaultdict
 import itertools
 
-from synbiochem.utils import sequence_utils
-from synbiochem.utils.sequence_utils import CodonOptimiser
+from synbiochem.utils import seq_utils
+
+from synbiochem.utils.seq_utils import CodonOptimiser
 import Bio.Data.CodonTable as CodonTable
 
 
@@ -32,7 +33,7 @@ class CodonSelector(object):
         '''Optimises codon selection.'''
         req_amino_acids = set(amino_acids.upper())
 
-        codons = [sequence_utils.CODONS[amino_acid]
+        codons = [seq_utils.CODONS[amino_acid]
                   for amino_acid in req_amino_acids]
 
         combos = [combo for combo in itertools.product(*codons)]
@@ -55,7 +56,7 @@ class CodonSelector(object):
         nucls = [[''.join(sorted(list(set(pos))))]
                  for pos in transpose[:2]] + [_optimise_pos_3(transpose[2])]
 
-        ambig_codons = [''.join([sequence_utils.NUCL_CODES[term]
+        ambig_codons = [''.join([seq_utils.NUCL_CODES[term]
                                  for term in cdn])
                         for cdn in itertools.product(*nucls)]
 
@@ -78,7 +79,7 @@ class CodonSelector(object):
 
         codon_opt = self.__get_codon_opt(tax_id)
 
-        ambig_codon_nucls = [sequence_utils.INV_NUCL_CODES[nucl]
+        ambig_codon_nucls = [seq_utils.INV_NUCL_CODES[nucl]
                              for nucl in ambig_codon]
 
         codons = [''.join(c) for c in itertools.product(*ambig_codon_nucls)]
