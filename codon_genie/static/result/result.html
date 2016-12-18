@@ -13,13 +13,13 @@
 			</thead>
 			<tbody>
 				<tr data-ng-repeat="result in results()">
-					<td><span class="label label-default" uib-tooltip="{{result[1]}}">{{result[0]}}</span></td>
+					<td><span class="label label-default" uib-tooltip="{{toCodonString(result[1])}}">{{result[0]}}</span></td>
 					<td>
 						<div data-ng-repeat="aa in result[3]" class="horizontal">
 							<span data-ng-class="{'label label-danger': aa[1][1] == -1,
 												'label label-success': aa[1][1] == 1,
 												'label label-warning': aa[1][1] == 0}"
-								uib-tooltip="{{toString(aa[1][0])}}">{{aa[0]}} {{aa[1].length}}</span>
+								uib-tooltip="{{toString(aa[1][0])}}">{{aa[0]}} {{aa[1][0].length}}</span>
 							&nbsp;
 						</div>
 					</td>

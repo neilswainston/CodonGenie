@@ -15,6 +15,10 @@ resultApp.directive("resultPanel", function() {
         		
         		return formatted.join(", ");
             };
+            
+            scope.toCodonString = function(array) {
+            	return "[" + array.join("|") + "]";
+            };
         }
     };
 });
