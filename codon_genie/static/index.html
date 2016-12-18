@@ -36,13 +36,10 @@
 		</div>
 	</nav>
 	
-	<div class="col-md-4">
+	<div class="col-md-12">
 		<div class="panel panel-default">
-			<!--
-	  		<div class="panel-heading">Query</div>
-	  		-->
 	  		<div class="result-panel panel-body">
-	  			<ul class="nav nav-tabs" id="app-tags"">
+	  			<ul class="nav nav-tabs">
 					<li role="presentation" data-ng-class="{active: ctrl.query.mode == 'aminoAcids'}">
 						<a data-ng-click="ctrl.query.mode = 'aminoAcids'">Design</a>
 					</li>
@@ -53,15 +50,37 @@
 				<form data-ng-submit="ctrl.submit()" class="form-horizontal"
 					role="form" name="form">
 					<fieldset data-ng-disabled="ctrl.isCalculating">
-						<div data-ng-show="ctrl.query.mode == 'aminoAcids'" class="form-group">
-							<label class="control-label col-sm-4">Amino acids:</label>
-							<div class="col-sm-6">
-								<input type="text" class="form-control uppercase"
-									data-ng-model="ctrl.query.aminoAcids" placeholder="Amino acids"
-									data-ng-pattern="ctrl.aa_pattern"
-									data-ng-disabled="ctrl.query.mode != 'aminoAcids'"
-									data-ng-required="ctrl.query.mode == 'aminoAcids'"
-									autocomplete="off">
+						<div data-ng-show="ctrl.query.mode == 'aminoAcids'">
+							<label class="control-label">Amino acids:</label>
+							<div>
+								<div class="btn-group btn-group-sm aa non-polar" role="group">
+									<button data-ng-click="ctrl.toggle('A')" data-ng-class="{active: ctrl.query.aminoAcids.includes('A')}" type="button" class="btn btn-default">A</button>
+									<button data-ng-click="ctrl.toggle('F')" data-ng-class="{active: ctrl.query.aminoAcids.includes('F')}" type="button" class="btn btn-default">F</button>
+									<button data-ng-click="ctrl.toggle('G')" data-ng-class="{active: ctrl.query.aminoAcids.includes('G')}" type="button" class="btn btn-default">G</button>
+									<button data-ng-click="ctrl.toggle('I')" data-ng-class="{active: ctrl.query.aminoAcids.includes('I')}" type="button" class="btn btn-default">I</button>
+									<button data-ng-click="ctrl.toggle('L')" data-ng-class="{active: ctrl.query.aminoAcids.includes('L')}" type="button" class="btn btn-default">L</button>
+									<button data-ng-click="ctrl.toggle('M')" data-ng-class="{active: ctrl.query.aminoAcids.includes('M')}" type="button" class="btn btn-default">M</button>
+									<button data-ng-click="ctrl.toggle('P')" data-ng-class="{active: ctrl.query.aminoAcids.includes('P')}" type="button" class="btn btn-default">P</button>
+									<button data-ng-click="ctrl.toggle('V')" data-ng-class="{active: ctrl.query.aminoAcids.includes('V')}" type="button" class="btn btn-default">V</button>
+									<button data-ng-click="ctrl.toggle('W')" data-ng-class="{active: ctrl.query.aminoAcids.includes('W')}" type="button" class="btn btn-default">W</button>
+								</div>
+								<div class="btn-group btn-group-sm aa polar" role="group">
+									<button data-ng-click="ctrl.toggle('C')" data-ng-class="{active: ctrl.query.aminoAcids.includes('C')}" type="button" class="btn btn-default">C</button>
+									<button data-ng-click="ctrl.toggle('N')" data-ng-class="{active: ctrl.query.aminoAcids.includes('N')}" type="button" class="btn btn-default">N</button>
+									<button data-ng-click="ctrl.toggle('Q')" data-ng-class="{active: ctrl.query.aminoAcids.includes('Q')}" type="button" class="btn btn-default">Q</button>
+									<button data-ng-click="ctrl.toggle('S')" data-ng-class="{active: ctrl.query.aminoAcids.includes('S')}" type="button" class="btn btn-default">S</button>
+									<button data-ng-click="ctrl.toggle('T')" data-ng-class="{active: ctrl.query.aminoAcids.includes('T')}" type="button" class="btn btn-default">T</button>
+									<button data-ng-click="ctrl.toggle('Y')" data-ng-class="{active: ctrl.query.aminoAcids.includes('Y')}" type="button" class="btn btn-default">Y</button>
+								</div>
+								<div class="btn-group btn-group-sm aa acidic" role="group">
+									<button data-ng-click="ctrl.toggle('D')" data-ng-class="{active: ctrl.query.aminoAcids.includes('D')}" type="button" class="btn btn-default">D</button>
+									<button data-ng-click="ctrl.toggle('E')" data-ng-class="{active: ctrl.query.aminoAcids.includes('E')}" type="button" class="btn btn-default">E</button>
+								</div>
+								<div class="btn-group btn-group-sm aa basic" role="group">
+									<button data-ng-click="ctrl.toggle('H')" data-ng-class="{active: ctrl.query.aminoAcids.includes('H')}" type="button" class="btn btn-default">H</button>
+									<button data-ng-click="ctrl.toggle('K')" data-ng-class="{active: ctrl.query.aminoAcids.includes('K')}" type="button" class="btn btn-default">K</button>
+									<button data-ng-click="ctrl.toggle('R')" data-ng-class="{active: ctrl.query.aminoAcids.includes('R')}" type="button" class="btn btn-default">R</button>
+								</div>
 							</div>
 						</div>
 						<div data-ng-show="ctrl.query.mode == 'codon'" class="form-group">
@@ -75,9 +94,9 @@
 									autocomplete="off">
 							</div>
 						</div>
-						<div class="form-group">
-							<label class="control-label col-sm-4">Organism:</label>
-							<div class="col-sm-6">
+						<div>
+							<label class="control-label">Organism:</label>
+							<div>
 								<div data-ng-controller="typeaheadCtrl as typeahead_ctrl">
 									<input type="text" class="form-control"
 										data-ng-init="typeahead_ctrl.url='/organisms/'"
@@ -91,20 +110,13 @@
 								</div>
 							</div>
 						</div>
-						<div class="form-group">
-							<div class="col-sm-4"></div>
-							<div class="col-sm-4">
-								<input type="submit" value="Search" class="form-control"
-								data-ng-disabled="form.$invalid">
-							</div>
-						</div>
 					</fieldset>
 				</form>
 	  		</div>
 		</div>
 	</div>
 	
-	<div class="col-md-8" data-ng-show="ctrl.results()">
+	<div class="col-md-12" data-ng-show="ctrl.results()">
 		<result-panel results="ctrl.results()"></result-panel>
 	</div>
 </body>
