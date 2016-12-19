@@ -36,14 +36,14 @@
 		</div>
 	</nav>
 	
-	<div class="col-md-12">
+	<div class="col-md-4">
 		<div class="panel panel-default">
 	  		<div class="result-panel panel-body">
 	  			<ul class="nav nav-tabs">
-					<li role="presentation" data-ng-class="{selected: ctrl.query.mode == 'aminoAcids'}">
+					<li role="presentation" data-ng-class="{active: ctrl.query.mode == 'aminoAcids'}">
 						<a data-ng-click="ctrl.query.mode = 'aminoAcids'">Design</a>
 					</li>
-					<li role="presentation" data-ng-class="{selected: ctrl.query.mode == 'codon'}">
+					<li role="presentation" data-ng-class="{active: ctrl.query.mode == 'codon'}">
 						<a data-ng-click="ctrl.query.mode = 'codon'">Analyse</a>
 					</li>
 				</ul>
@@ -51,7 +51,7 @@
 					<fieldset data-ng-disabled="ctrl.isCalculating">
 						<div data-ng-show="ctrl.query.mode == 'aminoAcids'">
 							<div class="aa non-polar">
-								<label>Non-polar</label>
+								<div class="aa-label">Non-polar</div>
 								<div>
 									<button data-ng-click="ctrl.toggle('A')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('A')}" class="btn-aa">A</button>
 									<button data-ng-click="ctrl.toggle('F')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('F')}" class="btn-aa">F</button>
@@ -65,7 +65,7 @@
 								</div>
 							</div>
 							<div class="aa polar">
-								<label>Polar</label>
+								<div class="aa-label">Polar</div>
 								<div>
 									<button data-ng-click="ctrl.toggle('C')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('C')}" class="btn-aa">C</button>
 									<button data-ng-click="ctrl.toggle('N')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('N')}" class="btn-aa">N</button>
@@ -76,14 +76,14 @@
 								</div>
 							</div>
 							<div class="aa acidic">
-								<label>Acidic</label>
+								<div class="aa-label">Acidic</div>
 								<div>
 									<button data-ng-click="ctrl.toggle('D')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('D')}" class="btn-aa">D</button>
 									<button data-ng-click="ctrl.toggle('E')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('E')}" class="btn-aa">E</button>
 								</div>
 							</div>
 							<div class="aa basic">
-								<label>Basic</label>
+								<div class="aa-label">Basic</div>
 								<div>
 									<button data-ng-click="ctrl.toggle('H')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('H')}" class="btn-aa">H</button>
 									<button data-ng-click="ctrl.toggle('K')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('K')}" class="btn-aa">K</button>
@@ -92,7 +92,7 @@
 							</div>
 						</div>
 						<div data-ng-show="ctrl.query.mode == 'codon'">
-							<label class="control-label">Codon:</label>
+							<div class="basic-label">Codon:</div>
 							<div>
 								<input type="text" class="form-control uppercase" 
 									data-ng-model="ctrl.query.codon"
@@ -105,7 +105,7 @@
 							</div>
 						</div>
 						<div>
-							<label class="control-label">Organism:</label>
+							<div class="basic-label">Organism:</div>
 							<div>
 								<div data-ng-controller="typeaheadCtrl as typeahead_ctrl">
 									<input type="text" class="form-control"
@@ -126,7 +126,7 @@
 		</div>
 	</div>
 	
-	<div class="col-md-12" data-ng-show="ctrl.results()">
+	<div class="col-md-8" data-ng-show="ctrl.results()">
 		<result-panel results="ctrl.results()"></result-panel>
 	</div>
 </body>
