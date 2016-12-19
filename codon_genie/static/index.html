@@ -49,7 +49,7 @@
 				</ul>
 				<form data-ng-submit="ctrl.submit()" class="form-horizontal" role="form" name="form">
 					<fieldset data-ng-disabled="ctrl.isCalculating">
-						<div data-ng-show="ctrl.query.mode == 'aminoAcids'">
+						<div class="row" data-ng-show="ctrl.query.mode == 'aminoAcids'">
 							<div class="aa non-polar">
 								<div class="aa-label">Non-polar</div>
 								<div>
@@ -91,9 +91,9 @@
 								</div>
 							</div>
 						</div>
-						<div data-ng-show="ctrl.query.mode == 'codon'">
-							<div class="basic-label">Codon:</div>
-							<div>
+						<div class="row" data-ng-show="ctrl.query.mode == 'codon'">
+							<label class="col-xs-3 col-form-label">Codon:</label>
+							<div class="col-xs-9">
 								<input type="text" class="form-control uppercase" 
 									data-ng-model="ctrl.query.codon"
 									data-ng-pattern="ctrl.codon_pattern"
@@ -104,10 +104,10 @@
 									autocomplete="off">
 							</div>
 						</div>
-						<div>
-							<div class="basic-label">Organism:</div>
+						<div class="row">
+							<label class="col-xs-3 col-form-label">Organism:</label>
 							<div>
-								<div data-ng-controller="typeaheadCtrl as typeahead_ctrl">
+								<div class="col-xs-9" data-ng-controller="typeaheadCtrl as typeahead_ctrl">
 									<input type="text" class="form-control"
 										data-ng-init="typeahead_ctrl.url='/organisms/'"
 										data-ng-model="ctrl.query.organism"
