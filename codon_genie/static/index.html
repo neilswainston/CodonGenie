@@ -51,9 +51,9 @@
 					role="form" name="form">
 					<fieldset data-ng-disabled="ctrl.isCalculating">
 						<div data-ng-show="ctrl.query.mode == 'aminoAcids'">
-							<label class="control-label">Amino acids:</label>
-							<div>
-								<div class="btn-group btn-group-sm aa non-polar" role="group">
+							<div class="aa non-polar">
+								<label>Non-polar</label>
+								<div class="btn-group-sm">
 									<button data-ng-click="ctrl.toggle('A')" data-ng-class="{active: ctrl.query.aminoAcids.includes('A')}" type="button" class="btn btn-default">A</button>
 									<button data-ng-click="ctrl.toggle('F')" data-ng-class="{active: ctrl.query.aminoAcids.includes('F')}" type="button" class="btn btn-default">F</button>
 									<button data-ng-click="ctrl.toggle('G')" data-ng-class="{active: ctrl.query.aminoAcids.includes('G')}" type="button" class="btn btn-default">G</button>
@@ -64,7 +64,10 @@
 									<button data-ng-click="ctrl.toggle('V')" data-ng-class="{active: ctrl.query.aminoAcids.includes('V')}" type="button" class="btn btn-default">V</button>
 									<button data-ng-click="ctrl.toggle('W')" data-ng-class="{active: ctrl.query.aminoAcids.includes('W')}" type="button" class="btn btn-default">W</button>
 								</div>
-								<div class="btn-group btn-group-sm aa polar" role="group">
+							</div>
+							<div class="aa polar">
+								<label>Polar</label>
+								<div class="btn-group-sm">
 									<button data-ng-click="ctrl.toggle('C')" data-ng-class="{active: ctrl.query.aminoAcids.includes('C')}" type="button" class="btn btn-default">C</button>
 									<button data-ng-click="ctrl.toggle('N')" data-ng-class="{active: ctrl.query.aminoAcids.includes('N')}" type="button" class="btn btn-default">N</button>
 									<button data-ng-click="ctrl.toggle('Q')" data-ng-class="{active: ctrl.query.aminoAcids.includes('Q')}" type="button" class="btn btn-default">Q</button>
@@ -72,25 +75,33 @@
 									<button data-ng-click="ctrl.toggle('T')" data-ng-class="{active: ctrl.query.aminoAcids.includes('T')}" type="button" class="btn btn-default">T</button>
 									<button data-ng-click="ctrl.toggle('Y')" data-ng-class="{active: ctrl.query.aminoAcids.includes('Y')}" type="button" class="btn btn-default">Y</button>
 								</div>
-								<div class="btn-group btn-group-sm aa acidic" role="group">
+							</div>
+							<div class="aa acidic">
+								<label>Acidic</label>
+								<div class="btn-group-sm">
 									<button data-ng-click="ctrl.toggle('D')" data-ng-class="{active: ctrl.query.aminoAcids.includes('D')}" type="button" class="btn btn-default">D</button>
 									<button data-ng-click="ctrl.toggle('E')" data-ng-class="{active: ctrl.query.aminoAcids.includes('E')}" type="button" class="btn btn-default">E</button>
 								</div>
-								<div class="btn-group btn-group-sm aa basic" role="group">
+							</div>
+							<div class="aa basic">
+								<label>Basic</label>
+								<div class="btn-group-sm">
 									<button data-ng-click="ctrl.toggle('H')" data-ng-class="{active: ctrl.query.aminoAcids.includes('H')}" type="button" class="btn btn-default">H</button>
 									<button data-ng-click="ctrl.toggle('K')" data-ng-class="{active: ctrl.query.aminoAcids.includes('K')}" type="button" class="btn btn-default">K</button>
 									<button data-ng-click="ctrl.toggle('R')" data-ng-class="{active: ctrl.query.aminoAcids.includes('R')}" type="button" class="btn btn-default">R</button>
 								</div>
 							</div>
 						</div>
-						<div data-ng-show="ctrl.query.mode == 'codon'" class="form-group">
-							<label class="control-label col-sm-4">Codon:</label>
-							<div class="col-sm-6">
+						<div data-ng-show="ctrl.query.mode == 'codon'">
+							<label class="control-label">Codon:</label>
+							<div>
 								<input type="text" class="form-control uppercase" 
-									data-ng-model="ctrl.query.codon" placeholder="Codon"
+									data-ng-model="ctrl.query.codon"
 									data-ng-pattern="ctrl.codon_pattern"
 									data-ng-disabled="ctrl.query.mode != 'codon'"
 									data-ng-required="ctrl.query.mode == 'codon'"
+									maxlength="3"
+									placeholder="Codon"
 									autocomplete="off">
 							</div>
 						</div>
