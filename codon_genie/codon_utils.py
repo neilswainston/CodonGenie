@@ -112,10 +112,11 @@ def _optimise_pos_3(options):
 
 def _analyse_amino_acids(amino_acids, req_amino_acids, codon_opt):
     '''Scores a given amino acids collection.'''
-    scores = [sum([codon_opt.get_cai(value[0]) for value in values]) /
-              len(values)
+    scores = [codon_opt.get_cai(value[0])
+              if amino_acid in req_amino_acids
+              else 0
               for amino_acid, values in amino_acids.iteritems()
-              if amino_acid in req_amino_acids]
+              for value in values]
 
     for amino_acid, values in amino_acids.iteritems():
         amino_acids[amino_acid] = (tuple(values), -1 if amino_acid == 'Stop'
@@ -125,7 +126,7 @@ def _analyse_amino_acids(amino_acids, req_amino_acids, codon_opt):
     amino_acids = tuple(sorted(amino_acids.items(),
                                key=lambda x: (-x[1][1], x[0])))
 
-    return amino_acids, sum(scores) / float(len(amino_acids))
+    return amino_acids, sum(scores) / float(len(scores))
 
 
 def _format_results(results):
