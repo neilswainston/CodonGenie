@@ -91,7 +91,8 @@ class CodonSelector(object):
             amino_acids[a_a].append((codon,
                                      codon_opt.get_codon_prob(codon)))
 
-        amino_acids, score = _analyse_amino_acids(amino_acids, req_amino_acids)
+        amino_acids, score = _analyse_amino_acids(amino_acids, req_amino_acids,
+                                                  codon_opt)
 
         result = (ambig_codon,
                   tuple(ambig_codon_nucls),
@@ -109,9 +110,10 @@ def _optimise_pos_3(options):
     return [''.join(opt) for opt in options]
 
 
-def _analyse_amino_acids(amino_acids, req_amino_acids):
+def _analyse_amino_acids(amino_acids, req_amino_acids, codon_opt):
     '''Scores a given amino acids collection.'''
-    scores = [sum([value[1] for value in values])
+    scores = [sum([codon_opt.get_cai(value[0]) for value in values]) /
+              len(values)
               for amino_acid, values in amino_acids.iteritems()
               if amino_acid in req_amino_acids]
 
@@ -123,7 +125,7 @@ def _analyse_amino_acids(amino_acids, req_amino_acids):
     amino_acids = tuple(sorted(amino_acids.items(),
                                key=lambda x: (-x[1][1], x[0])))
 
-    return amino_acids, sum(scores) / float(len(scores))
+    return amino_acids, sum(scores) / float(len(amino_acids))
 
 
 def _format_results(results):
