@@ -8,6 +8,7 @@ To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 @author:  neilswainston
 '''
 import json
+import operator
 import os
 import sys
 import traceback
@@ -29,7 +30,9 @@ _STATIC_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)),
 APP = Flask(__name__, static_folder=_STATIC_FOLDER)
 APP.config.from_object(__name__)
 
-_ORGANISMS = seq_utils.get_codon_usage_organisms()
+_ORGANISMS = sorted(seq_utils.get_codon_usage_organisms().items(),
+                    key=operator.itemgetter(0))
+
 _CODON_SELECTOR = CodonSelector()
 
 
@@ -39,12 +42,21 @@ def home():
     return APP.send_static_file('index.html')
 
 
+@APP.route('/organisms/')
+def get_all_organisms():
+    '''Gets all organisms.'''
+    orgs = '\n'.join([organism[1] + '\t' + organism[0]
+                      for organism in _ORGANISMS])
+
+    return Response(orgs, mimetype='text/plain')
+
+
 @APP.route('/organisms/<term>')
 def get_organisms(term):
     '''Gets organisms from search term.'''
-    return json.dumps([{'id': tax_id, 'name': name}
-                       for name, tax_id in _ORGANISMS.iteritems()
-                       if term.lower() in name.lower()])
+    return json.dumps([{'id': organism[1], 'name': organism[0]}
+                       for organism in _ORGANISMS
+                       if term.lower() in organism[0].lower()])
 
 
 @APP.route('/codons')
