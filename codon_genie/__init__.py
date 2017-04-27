@@ -68,7 +68,9 @@ def get_codons():
     else:
         codons = _CODON_SELECTOR.analyse_codon(request.args['codon'],
                                                request.args['organism'])
-    return json.dumps(codons)
+
+    return Response(json.dumps(codons, indent=3, sort_keys=True),
+                    mimetype='application/json')
 
 
 @APP.errorhandler(Exception)
