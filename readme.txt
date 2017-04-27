@@ -1,3 +1,15 @@
+# To run with Docker (Docker must be running):
+
+1. Clone repository:
+
+git clone https://github.com/synbiochem/CodonGenie.git
+
+2. Run start_server script:
+
+bash start_server.sh
+
+---
+
 # To run on Google Compute Engine:
 
 1. Create instance from client:
