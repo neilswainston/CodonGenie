@@ -43,7 +43,7 @@ class CodonSelector(object):
 
     def analyse_codon(self, ambig_codon, tax_id):
         '''Analyses an ambiguous codon.'''
-        results = [[self.__analyse_codon(ambig_codon.upper(), tax_id)]]
+        results = [[self.__analyse_ambig_codon(ambig_codon.upper(), tax_id)]]
         return _format_results(results)
 
     def __analyse(self, combo, tax_id, req_amino_acids):
@@ -58,24 +58,16 @@ class CodonSelector(object):
                                  for term in cdn])
                         for cdn in itertools.product(*nucls)]
 
-        results = [self.__analyse_codon(ambig_codon, tax_id, req_amino_acids)
+        results = [self.__analyse_ambig_codon(ambig_codon, tax_id,
+                                              req_amino_acids)
                    for ambig_codon in ambig_codons]
 
         return results
 
-    def __get_codon_opt(self, tax_id):
-        '''Gets the CodonOptimiser for the supplied taxonomy.'''
-        if tax_id not in self.__codon_opt:
-            self.__codon_opt[tax_id] = CodonOptimiser(tax_id)
-
-        return self.__codon_opt[tax_id]
-
-    def __analyse_codon(self, ambig_codon, tax_id, req_amino_acids=None):
+    def __analyse_ambig_codon(self, ambig_codon, tax_id, req_amino_acids=None):
         '''Analyses a given ambiguous codon.'''
         if req_amino_acids is None:
-            req_amino_acids = 'QWERTYIPASDFGHKLCVNM'
-
-        codon_opt = self.__get_codon_opt(tax_id)
+            req_amino_acids = []
 
         ambig_codon_nucls = [seq_utils.INV_NUCL_CODES[nucl]
                              for nucl in ambig_codon]
@@ -85,35 +77,44 @@ class CodonSelector(object):
         amino_acids = defaultdict(dict)
 
         for codon in codons:
-            amino_acid = self.__codon_to_aa.get(codon, 'Stop')
-            typ = _get_amino_acid_type(amino_acid, req_amino_acids)
-            amino_acids[amino_acid]['type'] = typ
-
-            if 'codons' not in amino_acids[amino_acid]:
-                amino_acids[amino_acid]['codons'] = []
-
-            amino_acids[amino_acid]['codons'].append(
-                {'codon': codon,
-                 'probability': codon_opt.get_codon_prob(codon),
-                 'cai': codon_opt.get_cai(codon)})
+            self.__analyse_codon(codon, tax_id, req_amino_acids, amino_acids)
 
         amino_acids = [dict(val, **{'amino_acid': key})
                        for key, val in sorted(amino_acids.items(),
                                               key=lambda(k, v): (-v['type'],
                                                                  k))]
 
-        return {'ambiguous_codon': ambig_codon,
-                'ambiguous_codon_nucleotides': tuple(ambig_codon_nucls),
-                'ambiguous_codon_expansion': tuple(codons),
-                'amino_acids': amino_acids,
-                'score': _get_score(amino_acids)}
+        result = {'ambiguous_codon': ambig_codon,
+                  'ambiguous_codon_nucleotides': tuple(ambig_codon_nucls),
+                  'ambiguous_codon_expansion': tuple(codons),
+                  'amino_acids': amino_acids}
 
+        if not len(req_amino_acids):
+            result.update({'score': _get_score(amino_acids)})
 
-def _get_amino_acid_type(amino_acid, req_amino_acids):
-    '''Gets amino acid type.'''
-    return -1 if amino_acid == 'Stop' \
-        else (1 if amino_acid in req_amino_acids
-              else 0)
+        return result
+
+    def __analyse_codon(self, codon, tax_id, req_amino_acids, amino_acids):
+        '''Analyses a specific codon.'''
+        codon_opt = self.__get_codon_opt(tax_id)
+        amino_acid = self.__codon_to_aa.get(codon, 'Stop')
+        typ = _get_amino_acid_type(amino_acid, req_amino_acids)
+        amino_acids[amino_acid]['type'] = typ
+
+        if 'codons' not in amino_acids[amino_acid]:
+            amino_acids[amino_acid]['codons'] = []
+
+        amino_acids[amino_acid]['codons'].append(
+            {'codon': codon,
+             'probability': codon_opt.get_codon_prob(codon),
+             'cai': codon_opt.get_cai(codon)})
+
+    def __get_codon_opt(self, tax_id):
+        '''Gets the CodonOptimiser for the supplied taxonomy.'''
+        if tax_id not in self.__codon_opt:
+            self.__codon_opt[tax_id] = CodonOptimiser(tax_id)
+
+        return self.__codon_opt[tax_id]
 
 
 def _optimise_pos_3(options):
@@ -121,6 +122,13 @@ def _optimise_pos_3(options):
                         for opt in itertools.product(*options)]))
     options.sort(key=len)
     return [''.join(opt) for opt in options]
+
+
+def _get_amino_acid_type(amino_acid, req_amino_acids):
+    '''Gets amino acid type.'''
+    return -1 if amino_acid == 'Stop' \
+        else (1 if amino_acid in req_amino_acids
+              else 0)
 
 
 def _get_score(amino_acids):
@@ -140,4 +148,4 @@ def _format_results(results):
     '''Formats results.'''
     return sorted([codon for result in results for codon in result],
                   key=lambda x: (len(x['ambiguous_codon_expansion']),
-                                 -x['score']))
+                                 -x['score'] if 'score' in x else 0))
