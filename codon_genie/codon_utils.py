@@ -97,18 +97,16 @@ class CodonSelector(object):
                  'probability': codon_opt.get_codon_prob(codon),
                  'cai': codon_opt.get_cai(codon)})
 
-        for vals in amino_acids.values():
-            vals['codons'] = sorted(vals['codons'], key=lambda x: -x['cai'])
+        amino_acids = [dict(val, **{'amino_acid': key})
+                       for key, val in sorted(amino_acids.items(),
+                                              key=lambda(k, v): (-v['type'],
+                                                                 k))]
 
-        score = _get_score(amino_acids.values())
-
-        result = {'ambiguous_codon': ambig_codon,
-                  'ambiguous_codon_nucleotides': tuple(ambig_codon_nucls),
-                  'ambiguous_codon_expansion': tuple(codons),
-                  'amino_acids': amino_acids,
-                  'score': score}
-
-        return result
+        return {'ambiguous_codon': ambig_codon,
+                'ambiguous_codon_nucleotides': tuple(ambig_codon_nucls),
+                'ambiguous_codon_expansion': tuple(codons),
+                'amino_acids': amino_acids,
+                'score': _get_score(amino_acids)}
 
 
 def _get_amino_acid_type(amino_acid, req_amino_acids):
@@ -127,6 +125,9 @@ def _optimise_pos_3(options):
 
 def _get_score(amino_acids):
     '''Scores a given amino acids collection.'''
+    for vals in amino_acids:
+        vals['codons'] = sorted(vals['codons'], key=lambda x: -x['cai'])
+
     scores = [amino_acid['codons'][0]['cai']
               if amino_acid['type'] == 1 else 0
               for amino_acid in amino_acids]
@@ -136,10 +137,6 @@ def _get_score(amino_acids):
 
 def _format_results(results):
     '''Formats results.'''
-    results = [codon for result in results for codon in result]
-
-    results = sorted(results,
-                     key=lambda x: (len(x['ambiguous_codon_expansion']),
-                                    -x['score']))
-
-    return results
+    return sorted([codon for result in results for codon in result],
+                  key=lambda x: (len(x['ambiguous_codon_expansion']),
+                                 -x['score']))

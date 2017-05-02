@@ -15,11 +15,11 @@
 				<tr data-ng-repeat="result in results()">
 					<td><span class="label label-default" uib-tooltip="{{toCodonString(result.ambiguous_codon_nucleotides)}}">{{result.ambiguous_codon}}</span></td>
 					<td>
-						<div data-ng-repeat="(aa_name, aa_vals) in result.amino_acids" class="horizontal">
-							<span data-ng-class="{'label label-danger': aa_vals['type'] == -1,
-												'label label-success': aa_vals['type'] == 1,
-												'label label-warning': aa_vals['type'] == 0}"
-								uib-tooltip="{{toString(aa_vals['codons'])}}">{{aa_name}} {{aa_vals['codons'].length}}</span>
+						<div data-ng-repeat="aa in result.amino_acids" class="horizontal">
+							<span data-ng-class="{'label label-danger': aa['type'] == -1,
+												'label label-success': aa['type'] == 1,
+												'label label-warning': aa['type'] == 0}"
+								uib-tooltip="{{toString(aa['codons'])}}">{{aa['amino_acid']}} {{aa['codons'].length}}</span>
 							&nbsp;
 						</div>
 					</td>
