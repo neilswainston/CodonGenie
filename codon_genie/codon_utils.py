@@ -128,9 +128,10 @@ def _get_score(amino_acids):
     for vals in amino_acids:
         vals['codons'] = sorted(vals['codons'], key=lambda x: -x['cai'])
 
-    scores = [amino_acid['codons'][0]['cai']
+    scores = [codon['cai']
               if amino_acid['type'] == 1 else 0
-              for amino_acid in amino_acids]
+              for amino_acid in amino_acids
+              for codon in amino_acid['codons']]
 
     return sum(scores) / float(len(scores))
 
