@@ -36,10 +36,8 @@ class CodonSelector(object):
         codons = [seq_utils.CODONS[amino_acid]
                   for amino_acid in req_amino_acids]
 
-        combos = [combo for combo in itertools.product(*codons)]
-
         results = [self.__analyse(combo, organism_id, req_amino_acids)
-                   for combo in combos]
+                   for combo in itertools.product(*codons)]
 
         return _format_results(results)
 
@@ -84,23 +82,40 @@ class CodonSelector(object):
 
         codons = [''.join(c) for c in itertools.product(*ambig_codon_nucls)]
 
-        amino_acids = defaultdict(list)
+        amino_acids = defaultdict(dict)
 
         for codon in codons:
-            a_a = self.__codon_to_aa.get(codon, 'Stop')
-            amino_acids[a_a].append((codon,
-                                     codon_opt.get_codon_prob(codon)))
+            amino_acid = self.__codon_to_aa.get(codon, 'Stop')
+            typ = _get_amino_acid_type(amino_acid, req_amino_acids)
+            amino_acids[amino_acid]['type'] = typ
 
-        amino_acids, score = _analyse_amino_acids(amino_acids, req_amino_acids,
-                                                  codon_opt)
+            if 'codons' not in amino_acids[amino_acid]:
+                amino_acids[amino_acid]['codons'] = []
 
-        result = (ambig_codon,
-                  tuple(ambig_codon_nucls),
-                  tuple(codons),
-                  amino_acids,
-                  score)
+            amino_acids[amino_acid]['codons'].append(
+                {'codon': codon,
+                 'probability': codon_opt.get_codon_prob(codon),
+                 'cai': codon_opt.get_cai(codon)})
+
+        for vals in amino_acids.values():
+            vals['codons'] = sorted(vals['codons'], key=lambda x: -x['cai'])
+
+        score = _get_score(amino_acids.values())
+
+        result = {'ambiguous_codon': ambig_codon,
+                  'ambiguous_codon_nucleotides': tuple(ambig_codon_nucls),
+                  'ambiguous_codon_expansion': tuple(codons),
+                  'amino_acids': amino_acids,
+                  'score': score}
 
         return result
+
+
+def _get_amino_acid_type(amino_acid, req_amino_acids):
+    '''Gets amino acid type.'''
+    return -1 if amino_acid == 'Stop' \
+        else (1 if amino_acid in req_amino_acids
+              else 0)
 
 
 def _optimise_pos_3(options):
@@ -110,27 +125,21 @@ def _optimise_pos_3(options):
     return [''.join(opt) for opt in options]
 
 
-def _analyse_amino_acids(amino_acids, req_amino_acids, codon_opt):
+def _get_score(amino_acids):
     '''Scores a given amino acids collection.'''
-    scores = [codon_opt.get_cai(value[0])
-              if amino_acid in req_amino_acids
-              else 0
-              for amino_acid, values in amino_acids.iteritems()
-              for value in values]
+    scores = [amino_acid['codons'][0]['cai']
+              if amino_acid['type'] == 1 else 0
+              for amino_acid in amino_acids]
 
-    for amino_acid, values in amino_acids.iteritems():
-        amino_acids[amino_acid] = (tuple(values), -1 if amino_acid == 'Stop'
-                                   else (1 if amino_acid in req_amino_acids
-                                         else 0))
-
-    amino_acids = tuple(sorted(amino_acids.items(),
-                               key=lambda x: (-x[1][1], x[0])))
-
-    return amino_acids, sum(scores) / float(len(scores))
+    return sum(scores) / float(len(scores))
 
 
 def _format_results(results):
     '''Formats results.'''
-    results = list(set([codon for result in results for codon in result]))
-    results.sort(key=lambda x: (len(x[2]), -x[4]))
+    results = [codon for result in results for codon in result]
+
+    results = sorted(results,
+                     key=lambda x: (len(x['ambiguous_codon_expansion']),
+                                    -x['score']))
+
     return results
