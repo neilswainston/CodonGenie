@@ -10,7 +10,7 @@ resultApp.directive("resultPanel", function() {
         		var formatted = [array.length];
         		
         		for(var i = 0; i < len; i++) {
-        			formatted[i] = array[i][0] + " (" + array[i][1].toFixed(2) + ")";
+        			formatted[i] = array[i]['codon'] + " (" + array[i]['probability'].toFixed(2) + ")";
         		}
         		
         		return formatted.join(", ");
