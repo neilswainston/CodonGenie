@@ -45,18 +45,16 @@ def home():
 @APP.route('/organisms/')
 def get_all_organisms():
     '''Gets all organisms.'''
-    orgs = '\n'.join([organism[1] + '\t' + organism[0]
-                      for organism in _ORGANISMS])
-
-    return Response(orgs, mimetype='text/plain')
+    return _get_organisms([{'id': organism[1], 'name': organism[0]}
+                           for organism in _ORGANISMS])
 
 
 @APP.route('/organisms/<term>')
 def get_organisms(term):
     '''Gets organisms from search term.'''
-    return json.dumps([{'id': organism[1], 'name': organism[0]}
-                       for organism in _ORGANISMS
-                       if term.lower() in organism[0].lower()])
+    return _get_organisms([{'id': organism[1], 'name': organism[0]}
+                           for organism in _ORGANISMS
+                           if term.lower() in organism[0].lower()])
 
 
 @APP.route('/codons')
@@ -81,3 +79,9 @@ def handle_exception(err):
     response = jsonify({'message': err.__class__.__name__ + ': ' + str(err)})
     response.status_code = 500
     return response
+
+
+def _get_organisms(organisms):
+    '''Gets organisms in json format.'''
+    return Response(json.dumps(organisms, indent=3, sort_keys=True),
+                    mimetype='application/json')

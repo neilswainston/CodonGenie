@@ -89,7 +89,7 @@ class CodonSelector(object):
                   'ambiguous_codon_expansion': tuple(codons),
                   'amino_acids': amino_acids}
 
-        if not len(req_amino_acids):
+        if len(req_amino_acids):
             result.update({'score': _get_score(amino_acids)})
 
         return result
