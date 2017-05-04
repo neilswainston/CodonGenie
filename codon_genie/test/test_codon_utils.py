@@ -22,7 +22,7 @@ class Test(unittest.TestCase):
         codons = cod_sel.optimise_codons('FLIMV', '37762')
 
         self.assertEqual(len(codons), 12)
-        self.assertEqual(codons[0][0], 'DTK')
+        self.assertEqual(codons[0]['ambiguous_codon'], 'DTK')
 
 
 if __name__ == "__main__":
