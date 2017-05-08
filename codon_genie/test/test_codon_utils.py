@@ -17,7 +17,7 @@ class Test(unittest.TestCase):
     '''Test class for modify_utils.'''
 
     def test_optimise_codons(self):
-        '''Tests isclose method.'''
+        '''Tests optimise_codons method.'''
         cod_sel = CodonSelector()
         codons = cod_sel.optimise_codons('FLIMV', '37762')
 
