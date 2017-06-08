@@ -9,4 +9,4 @@ RUN apk add --no-cache --virtual build-dependencies gcc musl-dev \
   && apk del build-dependencies
 
 ENTRYPOINT ["python"]
-CMD ["app.py", "80"]
+CMD ["app.py"]
