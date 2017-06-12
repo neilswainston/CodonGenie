@@ -42,6 +42,7 @@ def _get_tax_id(organism_name):
 
     raise ValueError(organism_name + ' not found')
 
+
 if __name__ == '__main__':
     print seq_from_alignment(['PFDMR', 'PIAMR', 'PLHLR', 'PMNMR', 'PVHMR'],
                              _get_tax_id('Escherichia coli'))
