@@ -12,6 +12,7 @@ import itertools
 
 from synbiochem.utils import seq_utils
 from synbiochem.utils.seq_utils import CodonOptimiser
+
 import Bio.Data.CodonTable as CodonTable
 
 
