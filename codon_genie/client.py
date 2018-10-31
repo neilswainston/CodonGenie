@@ -37,17 +37,3 @@ class CodonGenieClient(object):
         url = self.__url + 'codons?codon=%s&organism=%s' \
             % (codon, str(taxonomy_id))
         return requests.get(url).json()
-
-
-def main():
-    '''main method.'''
-    client = CodonGenieClient()
-    print client.get_organisms()
-    print client.get_codons('DE', '4932')
-    print client.get_codons('DE', 4932)
-    print client.analyse('DBK', '4932')
-    print client.analyse('DBK', 4932)
-
-
-if __name__ == '__main__':
-    main()

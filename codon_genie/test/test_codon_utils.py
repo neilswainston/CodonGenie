@@ -14,7 +14,7 @@ from codon_genie.codon_utils import CodonSelector
 
 
 class Test(unittest.TestCase):
-    '''Test class for modify_utils.'''
+    '''Test class for codon_utils.'''
 
     def test_optimise_codons(self):
         '''Tests optimise_codons method.'''
