@@ -7,12 +7,14 @@ To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 
 @author:  neilswainston
 '''
-import requests
+from codon_genie.client import CodonGenieClient
 
 
 def seq_from_alignment(alignment, tax_id):
     '''Generates a DNA sequence from amino acid sequence alignment.'''
     dna_seq = ''
+
+    client = CodonGenieClient()
 
     # Loop over each position in the alignment:
     for position in zip(*[list(seq) for seq in alignment]):
@@ -21,10 +23,7 @@ def seq_from_alignment(alignment, tax_id):
 
         # Query CodonGenie webservice with set of amino acids, to determine
         # optimum ambiguous codon for this position:
-        url = 'http://codon.synbiochem.co.uk/' + \
-            'codons?aminoAcids=%s&organism=%s' % (amino_acids, tax_id)
-
-        for codon in requests.get(url).json():
+        for codon in client.get_codons(amino_acids, tax_id):
             # Add first (best scoring) ambigous codon to the DNA sequence:
             dna_seq += codon['ambiguous_codon']
             break
@@ -35,9 +34,9 @@ def seq_from_alignment(alignment, tax_id):
 def _get_tax_id(organism_name):
     '''Gets NCBI Taxonomy id from organism name.'''
     # Query CodonGenie webservice with organism name:
-    url = 'http://codon.synbiochem.co.uk/organisms/' + organism_name
+    client = CodonGenieClient()
 
-    for organism in requests.get(url).json():
+    for organism in client.search_organisms(organism_name):
         return organism['id']
 
     raise ValueError(organism_name + ' not found')
