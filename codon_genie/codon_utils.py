@@ -10,13 +10,12 @@ To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 from collections import defaultdict
 import itertools
 
+import Bio.Data.CodonTable as CodonTable
 from synbiochem.utils import seq_utils
 from synbiochem.utils.seq_utils import CodonOptimiser
 
-import Bio.Data.CodonTable as CodonTable
 
-
-class CodonSelector(object):
+class CodonSelector():
     '''Class to optimise codon selection.'''
 
     def __init__(self, table_id=1):
@@ -24,7 +23,7 @@ class CodonSelector(object):
             CodonTable.unambiguous_dna_by_id[table_id].forward_table
         self.__aa_to_codon = defaultdict(list)
 
-        for codon, amino_acid in self.__codon_to_aa.iteritems():
+        for codon, amino_acid in self.__codon_to_aa.items():
             self.__aa_to_codon[amino_acid].append(codon)
 
         self.__codon_opt = {}
@@ -81,15 +80,15 @@ class CodonSelector(object):
 
         amino_acids = [dict(val, **{'amino_acid': key})
                        for key, val in sorted(amino_acids.items(),
-                                              key=lambda(k, v): (-v['type'],
-                                                                 k))]
+                                              key=lambda x: (-x[1]['type'],
+                                                             x[0]))]
 
         result = {'ambiguous_codon': ambig_codon,
                   'ambiguous_codon_nucleotides': tuple(ambig_codon_nucls),
                   'ambiguous_codon_expansion': tuple(codons),
                   'amino_acids': amino_acids}
 
-        if len(req_amino_acids):
+        if req_amino_acids:
             result.update({'score': _get_score(amino_acids)})
 
         return result
@@ -118,8 +117,8 @@ class CodonSelector(object):
 
 
 def _optimise_pos_3(options):
-    options = list(set([tuple(sorted(set(opt)))
-                        for opt in itertools.product(*options)]))
+    options = list({tuple(sorted(set(opt)))
+                    for opt in itertools.product(*options)})
     options.sort(key=len)
     return [''.join(opt) for opt in options]
 

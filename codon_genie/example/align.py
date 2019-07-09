@@ -19,7 +19,7 @@ def seq_from_alignment(alignment, tax_id):
     # Loop over each position in the alignment:
     for position in zip(*[list(seq) for seq in alignment]):
         # For each position, generate set of amino acids, ignoring inserts:
-        amino_acids = ''.join(set([pos for pos in position if pos != '-']))
+        amino_acids = ''.join({pos for pos in position if pos != '-'})
 
         # Query CodonGenie webservice with set of amino acids, to determine
         # optimum ambiguous codon for this position:
@@ -43,5 +43,5 @@ def _get_tax_id(organism_name):
 
 
 if __name__ == '__main__':
-    print seq_from_alignment(['PFDMR', 'PIAMR', 'PLHLR', 'PMNMR', 'PVHMR'],
-                             _get_tax_id('Escherichia coli'))
+    print(seq_from_alignment(['PFDMR', 'PIAMR', 'PLHLR', 'PMNMR', 'PVHMR'],
+                             _get_tax_id('Escherichia coli')))

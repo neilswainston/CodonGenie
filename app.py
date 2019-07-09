@@ -14,7 +14,7 @@ from codon_genie import APP
 
 def main(argv):
     '''main method.'''
-    if len(argv) > 0:
+    if argv:
         APP.run(host='0.0.0.0', threaded=True, port=int(argv[0]))
     else:
         APP.run(host='0.0.0.0', threaded=True)

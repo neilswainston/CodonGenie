@@ -15,9 +15,9 @@ import traceback
 import uuid
 
 from flask import Flask, jsonify, request, Response
-from synbiochem.utils import seq_utils
 
 from codon_genie.codon_utils import CodonSelector
+from synbiochem.utils import seq_utils
 
 
 # Configuration:

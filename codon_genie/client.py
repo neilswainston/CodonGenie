@@ -10,7 +10,7 @@ To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 import requests
 
 
-class CodonGenieClient(object):
+class CodonGenieClient():
     '''CodonGenie client class.'''
 
     def __init__(self, url='http://codon.synbiochem.co.uk/'):
