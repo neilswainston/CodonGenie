@@ -7,7 +7,8 @@ To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 
 @author:  neilswainston
 '''
-import requests
+import json
+from urllib import request
 
 
 class CodonGenieClient():
@@ -19,21 +20,28 @@ class CodonGenieClient():
     def get_organisms(self):
         '''Get organisms.'''
         url = self.__url + 'organisms/'
-        return requests.get(url).json()
+        return _get_json(url)
 
     def search_organisms(self, term):
         '''Search organiss.'''
         url = self.__url + 'organisms/' + term
-        return requests.get(url).json()
+        return _get_json(url)
 
     def get_codons(self, amino_acids, taxonomy_id):
         '''Get codons.'''
         url = self.__url + 'codons?aminoAcids=%s&organism=%s' \
             % (amino_acids, str(taxonomy_id))
-        return requests.get(url).json()
+        return _get_json(url)
 
     def analyse(self, codon, taxonomy_id):
         '''Analyse.'''
         url = self.__url + 'codons?codon=%s&organism=%s' \
             % (codon, str(taxonomy_id))
-        return requests.get(url).json()
+        return _get_json(url)
+
+
+def _get_json(url):
+    '''Get json.'''
+    with request.urlopen(url) as resp:
+        data = resp.read()
+        return json.loads(data)

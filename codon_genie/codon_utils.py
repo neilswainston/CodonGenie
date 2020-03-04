@@ -10,9 +10,51 @@ To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 from collections import defaultdict
 import itertools
 
-import Bio.Data.CodonTable as CodonTable
-from synbiochem.utils import seq_utils
 from synbiochem.utils.seq_utils import CodonOptimiser
+
+import Bio.Data.CodonTable as CodonTable
+
+CODONS = {'A': [['G', 'C', 'ACGT']],
+          'C': [['T', 'G', 'CT']],
+          'D': [['G', 'A', 'CT']],
+          'E': [['G', 'A', 'AG']],
+          'F': [['T', 'T', 'CT']],
+          'G': [['G', 'G', 'ACGT']],
+          'H': [['C', 'A', 'CT']],
+          'I': [['A', 'T', 'ACT']],
+          'K': [['A', 'A', 'AG']],
+          'L': [['C', 'T', 'ACGT'], ['T', 'T', 'AG']],
+          'M': [['A', 'T', 'G']],
+          'N': [['A', 'A', 'CT']],
+          'P': [['C', 'C', 'ACGT']],
+          'Q': [['C', 'A', 'AG']],
+          'R': [['C', 'G', 'ACGT'], ['A', 'G', 'AG']],
+          'S': [['T', 'C', 'ACGT'], ['A', 'G', 'CT']],
+          'T': [['A', 'C', 'ACGT']],
+          'V': [['G', 'T', 'ACGT']],
+          'W': [['T', 'G', 'G']],
+          'Y': [['T', 'A', 'CT']],
+          'Stop': [['T', 'A', 'AG'], ['T', 'G', 'A']]}
+
+NUCL_CODES = {
+    'A': 'A',
+    'C': 'C',
+    'G': 'G',
+    'T': 'T',
+    'AG': 'R',
+    'CT': 'Y',
+    'CG': 'S',
+    'AT': 'W',
+    'GT': 'K',
+    'AC': 'M',
+    'CGT': 'B',
+    'AGT': 'D',
+    'ACT': 'H',
+    'ACG': 'V',
+    'ACGT': 'N',
+}
+
+INV_NUCL_CODES = {val: key for key, val in NUCL_CODES.items()}
 
 
 class CodonSelector():
@@ -32,8 +74,7 @@ class CodonSelector():
         '''Optimises codon selection.'''
         req_amino_acids = set(amino_acids.upper())
 
-        codons = [seq_utils.CODONS[amino_acid]
-                  for amino_acid in req_amino_acids]
+        codons = [CODONS[amino_acid] for amino_acid in req_amino_acids]
 
         results = [self.__analyse(combo, organism_id, req_amino_acids)
                    for combo in itertools.product(*codons)]
@@ -53,8 +94,7 @@ class CodonSelector():
         nucls = [[''.join(sorted(list(set(pos))))]
                  for pos in transpose[:2]] + [_optimise_pos_3(transpose[2])]
 
-        ambig_codons = [''.join([seq_utils.NUCL_CODES[term]
-                                 for term in cdn])
+        ambig_codons = [''.join([NUCL_CODES[term] for term in cdn])
                         for cdn in itertools.product(*nucls)]
 
         results = [self.__analyse_ambig_codon(ambig_codon, tax_id,
@@ -68,8 +108,7 @@ class CodonSelector():
         if req_amino_acids is None:
             req_amino_acids = []
 
-        ambig_codon_nucls = [seq_utils.INV_NUCL_CODES[nucl]
-                             for nucl in ambig_codon]
+        ambig_codon_nucls = [INV_NUCL_CODES[nucl] for nucl in ambig_codon]
 
         codons = [''.join(c) for c in itertools.product(*ambig_codon_nucls)]
 
