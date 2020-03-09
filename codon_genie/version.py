@@ -7,4 +7,4 @@ To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 
 @author:  neilswainston
 '''
-__version__ = '0.0.1'
+__version__ = '0.0.2'
