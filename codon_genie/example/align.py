@@ -1,5 +1,5 @@
 '''
-CodonGenie (c) University of Manchester 2016
+CodonGenie (c) University of Liverpool 2020
 
 CodonGenie is licensed under the MIT License.
 
