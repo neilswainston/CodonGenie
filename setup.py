@@ -13,11 +13,9 @@ import setuptools
 with open('README.md', 'r') as fh:
     _LONG_DESCRIPTION = fh.read()
 
-exec(open('codon_genie/version.py').read())  # Reads __version__
-
 setuptools.setup(
     name='CodonGenie',
-    version=__version__,
+    version='1.1',
     author='Neil Swainston',
     author_email='neil.swainston@liverpool.ac.uk',
     description='CodonGenie',
@@ -30,5 +28,5 @@ setuptools.setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.7',
 )
