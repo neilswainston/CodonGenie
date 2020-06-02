@@ -33,6 +33,16 @@ class Test(unittest.TestCase):
         self.assertTrue(all([term.lower() in organism['name'].lower()
                              for organism in organisms]))
 
+    def test_search_organisms_space(self):
+        '''Tests search_organisms method.'''
+        client = CodonGenieClient()
+
+        term = 'escherichia co'
+        organisms = client.search_organisms(term)
+
+        self.assertTrue(all([term.lower() in organism['name'].lower()
+                             for organism in organisms]))
+
     def test_get_codons(self):
         '''Tests get_codons method.'''
         client = CodonGenieClient()
@@ -46,7 +56,7 @@ class Test(unittest.TestCase):
         '''Tests analyse method.'''
         client = CodonGenieClient()
 
-        result = client.analyse('NTT', 4932)
+        result = client.analyse('NTT', '4932')
 
         self.assertEqual(len(result[0]['amino_acids']), 4)
 

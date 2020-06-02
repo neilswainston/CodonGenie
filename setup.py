@@ -15,7 +15,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='CodonGenie',
-    version='1.1',
+    version='1.2',
     author='Neil Swainston',
     author_email='neil.swainston@liverpool.ac.uk',
     description='CodonGenie',
