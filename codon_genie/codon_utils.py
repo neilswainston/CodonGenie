@@ -1,189 +1,272 @@
 '''
-CodonGenie (c) University of Liverpool 2020
+CodonGenie (c) GeneGenie Bioinformatics Ltd. 2020
 
-CodonGenie is licensed under the MIT License.
-
-To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
+All rights reserved.
 
 @author:  neilswainston
 '''
-from collections import defaultdict
-import itertools
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
+import operator
+import os.path
+import random
+import re
+import tempfile
+import urllib.request
 
-from synbiochem.utils.seq_utils import CodonOptimiser
-
-import Bio.Data.CodonTable as CodonTable
-
-CODONS = {'A': [['G', 'C', 'ACGT']],
-          'C': [['T', 'G', 'CT']],
-          'D': [['G', 'A', 'CT']],
-          'E': [['G', 'A', 'AG']],
-          'F': [['T', 'T', 'CT']],
-          'G': [['G', 'G', 'ACGT']],
-          'H': [['C', 'A', 'CT']],
-          'I': [['A', 'T', 'ACT']],
-          'K': [['A', 'A', 'AG']],
-          'L': [['C', 'T', 'ACGT'], ['T', 'T', 'AG']],
-          'M': [['A', 'T', 'G']],
-          'N': [['A', 'A', 'CT']],
-          'P': [['C', 'C', 'ACGT']],
-          'Q': [['C', 'A', 'AG']],
-          'R': [['C', 'G', 'ACGT'], ['A', 'G', 'AG']],
-          'S': [['T', 'C', 'ACGT'], ['A', 'G', 'CT']],
-          'T': [['A', 'C', 'ACGT']],
-          'V': [['G', 'T', 'ACGT']],
-          'W': [['T', 'G', 'G']],
-          'Y': [['T', 'A', 'CT']],
-          'Stop': [['T', 'A', 'AG'], ['T', 'G', 'A']]}
-
-NUCL_CODES = {
-    'A': 'A',
-    'C': 'C',
-    'G': 'G',
-    'T': 'T',
-    'AG': 'R',
-    'CT': 'Y',
-    'CG': 'S',
-    'AT': 'W',
-    'GT': 'K',
-    'AC': 'M',
-    'CGT': 'B',
-    'AGT': 'D',
-    'ACT': 'H',
-    'ACG': 'V',
-    'ACGT': 'N',
-}
-
-INV_NUCL_CODES = {val: key for key, val in NUCL_CODES.items()}
+from utils import ncbi_tax_utils, seq_utils
 
 
-class CodonSelector():
-    '''Class to optimise codon selection.'''
+class CodonOptimiser():
+    '''Class to support codon optimisation.'''
 
-    def __init__(self, table_id=1):
-        self.__codon_to_aa = \
-            CodonTable.unambiguous_dna_by_id[table_id].forward_table
-        self.__aa_to_codon = defaultdict(list)
+    def __init__(self, taxonomy_id):
+        self.__taxonomy_id = taxonomy_id
+        self.__aa_to_codon_prob = self.__get_codon_usage()
+        self.__codon_prob = {item[0]: item[1]
+                             for lst in self.__aa_to_codon_prob.values()
+                             for item in lst}
 
-        for codon, amino_acid in self.__codon_to_aa.items():
-            self.__aa_to_codon[amino_acid].append(codon)
+        self.__codon_to_w = {}
 
-        self.__codon_opt = {}
+        for key in self.__aa_to_codon_prob:
+            aa_dict = {a: b / self.__aa_to_codon_prob[key][0][1]
+                       for a, b in self.__aa_to_codon_prob[key]}
+            self.__codon_to_w.update(aa_dict)
 
-    def optimise_codons(self, amino_acids, organism_id):
-        '''Optimises codon selection.'''
-        req_amino_acids = set(amino_acids.upper())
+    def get_codon_prob(self, codon):
+        '''Gets the codon probability.'''
+        return self.__codon_prob[codon]
 
-        codons = [CODONS[amino_acid] for amino_acid in req_amino_acids]
+    def get_codon_optim_seq(self, protein_seq, excl_codons=None,
+                            max_repeat_nuc=float('inf'), restr_enzyms=None,
+                            max_attempts=1000, tolerant=False, stepback=3):
+        '''Returns a codon optimised DNA sequence.'''
+        if max_repeat_nuc == float('inf') and restr_enzyms is None:
+            return ''.join([self.get_random_codon(aa, excl_codons)
+                            for aa in protein_seq])
 
-        results = [self.__analyse(combo, organism_id, req_amino_acids)
-                   for combo in itertools.product(*codons)]
+        attempts = 0
+        seq = ''
+        i = 0
+        blockage_i = -1
+        inv_patterns = 0
 
-        return _format_results(results)
+        while attempts < max_attempts:
+            amino_acid = protein_seq[i]
+            new_seq = seq + self.get_random_codon(amino_acid, excl_codons)
 
-    def analyse_codon(self, ambig_codon, tax_id):
-        '''Analyses an ambiguous codon.'''
-        results = [[self.__analyse_ambig_codon(ambig_codon.upper(), tax_id)]]
-        return _format_results(results)
+            invalids = seq_utils.find_invalid(new_seq, max_repeat_nuc,
+                                              restr_enzyms)
 
-    def __analyse(self, combo, tax_id, req_amino_acids):
-        '''Analyses a combo, returning nucleotides, ambiguous nucleotides,
-        amino acids encodes, and number of variants.'''
-        transpose = [sorted(list(term)) for term in map(set, zip(*combo))]
+            if len(invalids) == inv_patterns or \
+                    (attempts == max_attempts - 1 and tolerant):
 
-        nucls = [[''.join(sorted(list(set(pos))))]
-                 for pos in transpose[:2]] + [_optimise_pos_3(transpose[2])]
+                if i == blockage_i:
+                    if attempts == max_attempts - 1:
+                        inv_patterns = inv_patterns + 1
 
-        ambig_codons = [''.join([NUCL_CODES[term] for term in cdn])
-                        for cdn in itertools.product(*nucls)]
+                    attempts = 0
 
-        results = [self.__analyse_ambig_codon(ambig_codon, tax_id,
-                                              req_amino_acids)
-                   for ambig_codon in ambig_codons]
+                seq = new_seq
 
-        return results
+                if i == len(protein_seq) - 1:
+                    return seq
 
-    def __analyse_ambig_codon(self, ambig_codon, tax_id, req_amino_acids=None):
-        '''Analyses a given ambiguous codon.'''
-        if req_amino_acids is None:
-            req_amino_acids = []
+                i += 1
+            else:
+                blockage_i = max(i, blockage_i)
+                i = max(0, (invalids[-1] // 3) - stepback)
+                seq = seq[:i * 3]
+                attempts += 1
 
-        ambig_codon_nucls = [INV_NUCL_CODES[nucl] for nucl in ambig_codon]
+        raise ValueError('Unable to generate codon-optimised sequence with '
+                         '%i maximum repeating nucleotides.' % max_repeat_nuc)
 
-        codons = [''.join(c) for c in itertools.product(*ambig_codon_nucls)]
+    def get_cai(self, dna_seq):
+        '''Gets the CAI for a given DNA sequence.'''
+        w_vals = []
 
-        amino_acids = defaultdict(dict)
+        for i in range(0, len(dna_seq), 3):
+            codon = dna_seq[i:i + 3]
 
-        for codon in codons:
-            self.__analyse_codon(codon, tax_id, req_amino_acids, amino_acids)
+            if codon in self.__codon_to_w:
+                w_vals.append(self.__codon_to_w[codon])
 
-        amino_acids = [dict(val, **{'amino_acid': key})
-                       for key, val in sorted(amino_acids.items(),
-                                              key=lambda x: (-x[1]['type'],
-                                                             x[0]))]
+        return sum(w_vals) / len(w_vals)
 
-        result = {'ambiguous_codon': ambig_codon,
-                  'ambiguous_codon_nucleotides': tuple(ambig_codon_nucls),
-                  'ambiguous_codon_expansion': tuple(codons),
-                  'amino_acids': amino_acids}
+    def mutate(self, protein_seq, dna_seq, mutation_rate):
+        '''Mutate a protein-encoding DNA sequence according to a
+        supplied mutation rate.'''
+        return ''.join([self.get_random_codon(amino_acid)
+                        if random.random() < mutation_rate
+                        else dna_seq[3 * i:3 * (i + 1)]
+                        for i, amino_acid in enumerate(protein_seq)])
 
-        if req_amino_acids:
-            result.update({'score': _get_score(amino_acids)})
+    def get_all_codons(self, amino_acid):
+        '''Returns all codons for a given amino acid.'''
+        return [t[0] for t in self.__aa_to_codon_prob[amino_acid]]
 
-        return result
+    def get_best_codon(self, amino_acid):
+        '''Get 'best' codon for a given amino acid.'''
+        return self.__aa_to_codon_prob[amino_acid][0][0]
 
-    def __analyse_codon(self, codon, tax_id, req_amino_acids, amino_acids):
-        '''Analyses a specific codon.'''
-        codon_opt = self.__get_codon_opt(tax_id)
-        amino_acid = self.__codon_to_aa.get(codon, 'Stop')
-        typ = _get_amino_acid_type(amino_acid, req_amino_acids)
-        amino_acids[amino_acid]['type'] = typ
+    def get_random_codon(self, amino_acid, excl_codons=None):
+        '''Returns a random codon for a given amino acid,
+        based on codon probability from the codon usage table.'''
+        if excl_codons is None:
+            excl_codons = []
 
-        if 'codons' not in amino_acids[amino_acid]:
-            amino_acids[amino_acid]['codons'] = []
+        codon_usage = [codon_usage
+                       for codon_usage in self.__aa_to_codon_prob[amino_acid]
+                       if codon_usage[0] not in excl_codons]
 
-        amino_acids[amino_acid]['codons'].append(
-            {'codon': codon,
-             'probability': codon_opt.get_codon_prob(codon),
-             'cai': codon_opt.get_cai(codon)})
+        if not codon_usage:
+            raise ValueError('No codons available for ' + amino_acid +
+                             ' after excluding ' + str(excl_codons))
 
-    def __get_codon_opt(self, tax_id):
-        '''Gets the CodonOptimiser for the supplied taxonomy.'''
-        if tax_id not in self.__codon_opt:
-            self.__codon_opt[tax_id] = CodonOptimiser(tax_id)
+        while True:
+            rand = random.random()
+            cumulative_prob = 0
 
-        return self.__codon_opt[tax_id]
+            for codon, prob in iter(reversed(codon_usage)):
+                cumulative_prob += prob
+
+                if cumulative_prob > rand:
+                    return codon
+
+    def __get_codon_usage(self):
+        '''Gets the codon usage table for a given taxonomy id.'''
+        aa_to_codon_prob = {aa_code: {}
+                            for aa_code in seq_utils.AA_CODES.values()}
+
+        url = 'http://www.kazusa.or.jp/codon/cgi-bin/showcodon.cgi?species=' \
+            + self.__taxonomy_id + '&aa=1&style=GCG'
+
+        in_codons = False
+
+        with urllib.request.urlopen(url) as resp:
+            for line in resp:
+                line = line.decode('utf-8').strip()
+
+                if line == '<PRE>':
+                    in_codons = True
+                elif line == '</PRE>':
+                    break
+                elif in_codons:
+                    values = re.split('\\s+', line)
+                    am_acid = 'Stop' if values[0] == 'End' else values[0]
+
+                    if am_acid in seq_utils.AA_CODES:
+                        codon_prob = aa_to_codon_prob[
+                            seq_utils.AA_CODES[am_acid]]
+                        codon_prob[values[1]] = float(values[3])
+
+        aa_to_codon_prob.update((x, _scale(y))
+                                for x, y in aa_to_codon_prob.items())
+
+        return aa_to_codon_prob
 
 
-def _optimise_pos_3(options):
-    options = list({tuple(sorted(set(opt)))
-                    for opt in itertools.product(*options)})
-    options.sort(key=len)
-    return [''.join(opt) for opt in options]
+def get_codon_usage_organisms(expand=False):
+    '''Gets name to taxonomy id dictionary of available codon usage tables.'''
+    destination = os.path.dirname(os.path.realpath(__file__))
+    filename = 'expand.txt' if expand else 'normal.txt'
+    filepath = os.path.join(destination, filename)
+
+    if not os.path.exists(filepath):
+        # Download:
+        if not os.path.exists(destination):
+            os.makedirs(destination)
+
+        url = 'ftp://ftp.kazusa.or.jp/pub/codon/current/species.table'
+        tmp = tempfile.NamedTemporaryFile(delete=False)
+
+        urllib.request.urlretrieve(url, tmp.name)
+
+        # Read:
+        codon_orgs = _read_codon_usage_orgs_file(tmp.name)
+
+        # Expand:
+        if expand:
+            new_codon_orgs = {}
+
+            _expand_codon_usage_orgs(codon_orgs, new_codon_orgs,
+                                     ncbi_tax_utils.TaxonomyFactory())
+
+            codon_orgs = new_codon_orgs
+
+        # Save:
+        _write_codon_usage_orgs_file(codon_orgs, filepath)
+
+        return codon_orgs
+
+    return _read_codon_usage_orgs_file(filepath)
 
 
-def _get_amino_acid_type(amino_acid, req_amino_acids):
-    '''Gets amino acid type.'''
-    return -1 if amino_acid == 'Stop' \
-        else (1 if amino_acid in req_amino_acids
-              else 0)
+def _scale(codon_usage):
+    '''Scale codon usage values to add to 1.'''
+    sum_cdn_usage = sum(codon_usage.values())
+
+    if sum_cdn_usage:
+        codon_usage = {key: value / sum_cdn_usage
+                       for key, value in codon_usage.items()}
+    else:
+        codon_usage = {key: 1 / len(codon_usage)
+                       for key in codon_usage}
+
+    return sorted(codon_usage.items(), key=operator.itemgetter(1),
+                  reverse=True)
 
 
-def _get_score(amino_acids):
-    '''Scores a given amino acids collection.'''
-    for vals in amino_acids:
-        vals['codons'] = sorted(vals['codons'], key=lambda x: -x['cai'])
+def _read_codon_usage_orgs_file(filename):
+    '''Reads Codon Usage Database table of species file.'''
+    codon_orgs = {}
 
-    scores = [codon['cai']
-              if amino_acid['type'] == 1 else 0
-              for amino_acid in amino_acids
-              for codon in amino_acid['codons']]
+    with open(filename, 'r') as textfile:
+        next(textfile)
 
-    return sum(scores) / float(len(scores))
+        for line in textfile:
+            tokens = line.strip().split('\t')
+            codon_orgs[tokens[0]] = tokens[1]
+
+    return codon_orgs
 
 
-def _format_results(results):
-    '''Formats results.'''
-    return sorted([codon for result in results for codon in result],
-                  key=lambda x: (len(x['ambiguous_codon_expansion']),
-                                 -x['score'] if 'score' in x else 0))
+def _expand_codon_usage_orgs(codon_orgs, new_codon_orgs, factory,
+                             max_errors=16):
+    '''Expand Codon Usage Db table of species with children and synonyms.'''
+    for name, tax_id in codon_orgs.items():
+        errors = 0
+        success = False
+
+        while not success:
+            try:
+                if name and name not in new_codon_orgs:
+                    new_codon_orgs[name] = tax_id
+
+                for synonym in factory.get_names(tax_id):
+                    if synonym not in new_codon_orgs:
+                        new_codon_orgs[synonym] = tax_id
+
+                _expand_codon_usage_orgs(
+                    {None: child_tax_id
+                     for child_tax_id in factory.get_child_ids(tax_id)},
+                    new_codon_orgs, factory)
+
+                success = True
+
+            except ConnectionError as err:
+                errors += 1
+
+                if errors == max_errors:
+                    raise err
+
+
+def _write_codon_usage_orgs_file(codon_orgs, filepath):
+    '''Writes Codon Usage Database table of species file.'''
+    with open(filepath, 'w+') as fle:
+        fle.write('Name\tId\n')
+
+        for name, tax_id in codon_orgs.items():
+            fle.write(name + '\t' + tax_id + '\n')

@@ -16,9 +16,11 @@ import sys
 import traceback
 import uuid
 
-from codon_genie.codon_utils import CodonSelector
 from flask import Flask, jsonify, request, Response
-from synbiochem.utils import seq_utils
+
+from codon_genie.codon_genie import CodonSelector
+from utils import codon_utils
+
 
 # Configuration:
 DEBUG = True
@@ -30,7 +32,7 @@ _STATIC_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)),
 app = Flask(__name__, static_folder=_STATIC_FOLDER)
 app.config.from_object(__name__)
 
-_ORGANISMS = sorted(seq_utils.get_codon_usage_organisms().items(),
+_ORGANISMS = sorted(codon_utils.get_codon_usage_organisms().items(),
                     key=operator.itemgetter(0))
 
 _CODON_SELECTOR = CodonSelector()
