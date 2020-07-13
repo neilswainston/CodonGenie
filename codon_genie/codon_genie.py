@@ -8,7 +8,7 @@ All rights reserved.
 from collections import defaultdict
 import itertools
 
-from codon_genie.codon_utils import CodonOptimiser
+from genegeniebio.utils.codon_utils import CodonOptimiser
 
 import Bio.Data.CodonTable as CodonTable
 
