@@ -18,7 +18,7 @@ import uuid
 
 from flask import Flask, jsonify, request, Response
 
-from codon_genie import codon_utils
+from genegeniebio.utils import codon_utils
 from codon_genie.codon_genie import CodonSelector
 
 
