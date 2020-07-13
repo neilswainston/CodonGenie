@@ -1,1 +1,1 @@
-gcloud app deploy app.yaml
+gcloud beta app deploy --no-cache
