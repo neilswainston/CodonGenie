@@ -1,2 +1,2 @@
 Flask
-synbiochem-py
+git+https://github.com/genegeniebio/genegeniebio-utils

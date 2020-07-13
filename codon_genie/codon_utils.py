@@ -14,7 +14,29 @@ import re
 import tempfile
 import urllib.request
 
-from utils import ncbi_tax_utils, seq_utils
+from utils import ncbi_tax_utils
+
+AA_CODES = {'Ala': 'A',
+            'Cys': 'C',
+            'Asp': 'D',
+            'Glu': 'E',
+            'Phe': 'F',
+            'Gly': 'G',
+            'His': 'H',
+            'Ile': 'I',
+            'Lys': 'K',
+            'Leu': 'L',
+            'Met': 'M',
+            'Asn': 'N',
+            'Pro': 'P',
+            'Gln': 'Q',
+            'Arg': 'R',
+            'Ser': 'S',
+            'Thr': 'T',
+            'Val': 'V',
+            'Trp': 'W',
+            'Tyr': 'Y',
+            'Stop': '*'}
 
 
 class CodonOptimiser():
@@ -138,7 +160,7 @@ class CodonOptimiser():
     def __get_codon_usage(self):
         '''Gets the codon usage table for a given taxonomy id.'''
         aa_to_codon_prob = {aa_code: {}
-                            for aa_code in seq_utils.AA_CODES.values()}
+                            for aa_code in AA_CODES.values()}
 
         url = 'http://www.kazusa.or.jp/codon/cgi-bin/showcodon.cgi?species=' \
             + self.__taxonomy_id + '&aa=1&style=GCG'
@@ -157,9 +179,8 @@ class CodonOptimiser():
                     values = re.split('\\s+', line)
                     am_acid = 'Stop' if values[0] == 'End' else values[0]
 
-                    if am_acid in seq_utils.AA_CODES:
-                        codon_prob = aa_to_codon_prob[
-                            seq_utils.AA_CODES[am_acid]]
+                    if am_acid in AA_CODES:
+                        codon_prob = aa_to_codon_prob[AA_CODES[am_acid]]
                         codon_prob[values[1]] = float(values[3])
 
         aa_to_codon_prob.update((x, _scale(y))
