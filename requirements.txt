@@ -1,3 +1,2 @@
 Flask
 Biopython
-git+https://github.com/genegeniebio/genegeniebio-utils

@@ -5,12 +5,12 @@ All rights reserved.
 
 @author:  neilswainston
 '''
+# pylint: disable=wrong-import-order
 from collections import defaultdict
 import itertools
 
-from genegeniebio.utils.codon_utils import CodonOptimiser
-
 import Bio.Data.CodonTable as CodonTable
+from codon_genie.codon_utils import CodonOptimiser
 
 
 CODONS = {'A': [['G', 'C', 'ACGT']],

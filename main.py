@@ -16,10 +16,8 @@ import sys
 import traceback
 import uuid
 
+from codon_genie.codon_genie import CodonSelector, get_codon_usage_organisms
 from flask import Flask, jsonify, request, Response
-
-from genegeniebio.utils import codon_utils
-from codon_genie.codon_genie import CodonSelector
 
 
 # Configuration:
@@ -32,7 +30,7 @@ _STATIC_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)),
 app = Flask(__name__, static_folder=_STATIC_FOLDER)
 app.config.from_object(__name__)
 
-_ORGANISMS = sorted(codon_utils.get_codon_usage_organisms().items(),
+_ORGANISMS = sorted(get_codon_usage_organisms().items(),
                     key=operator.itemgetter(0))
 
 _CODON_SELECTOR = CodonSelector()
