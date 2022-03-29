@@ -5,14 +5,14 @@ All rights reserved.
 
 @author:  neilswainston
 '''
-from collections import defaultdict
 import re
+from collections import defaultdict
+
 from Bio.Data import CodonTable
 from Bio.Restriction import Restriction, Restriction_Dictionary
 from Bio.Seq import Seq
 
 NUCLEOTIDES = ['A', 'C', 'G', 'T']
-
 
 NA = 'NA'
 K = 'K'
@@ -27,6 +27,7 @@ AA_COD = defaultdict(list)
 for cod, am_ac in \
         CodonTable.unambiguous_dna_by_name['Standard'].forward_table.items():
     AA_COD[am_ac].append(cod)
+
 
 # ssl._create_default_https_context = ssl._create_unverified_context
 

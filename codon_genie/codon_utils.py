@@ -16,7 +16,6 @@ import urllib.request
 
 from codon_genie import ncbi_tax_utils, seq_utils
 
-
 AA_CODES = {'Ala': 'A',
             'Cys': 'C',
             'Asp': 'D',
@@ -164,7 +163,7 @@ class CodonOptimiser():
                             for aa_code in AA_CODES.values()}
 
         url = 'http://www.kazusa.or.jp/codon/cgi-bin/showcodon.cgi?species=' \
-            + str(self.__taxonomy_id) + '&aa=1&style=GCG'
+              + str(self.__taxonomy_id) + '&aa=1&style=GCG'
 
         in_codons = False
 

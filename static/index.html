@@ -1,134 +1,202 @@
 <!doctype html>
 <html data-ng-app="codonGenieApp" data-ng-controller="codonGenieCtrl as ctrl">
 <head>
-	<title>CodonGenie</title>
-	<link rel="stylesheet" href="static/style.css">
-	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-	<script src="//twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.min.js"></script>
-	<script src="//www.google.com/jsapi"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-route.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-sanitize.js"></script>
-	<script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-1.3.3.js"></script>
-	<script src="static/error/error.module.js"></script>
-	<script src="static/error/error.ctrl.js"></script>
-	<script src="static/error/error.service.js"></script>
-	<script src="static/codonGenie/codonGenie.module.js"></script>
-	<script src="static/codonGenie/codonGenie.ctrl.js"></script>
-	<script src="static/result/result.module.js"></script>
-	<script src="static/result/result.directive.js"></script>
-	<script src="static/typeahead/typeahead.module.js"></script>
-	<script src="static/typeahead/typeahead.ctrl.js"></script>
-	<link rel="shortcut icon" href="static/favicon.ico">
+    <title>CodonGenie</title>
+    <link href="static/style.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+          rel="stylesheet">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="//twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.min.js"></script>
+    <script src="//www.google.com/jsapi"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-route.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-sanitize.js"></script>
+    <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-1.3.3.js"></script>
+    <script src="static/error/error.module.js"></script>
+    <script src="static/error/error.ctrl.js"></script>
+    <script src="static/error/error.service.js"></script>
+    <script src="static/codonGenie/codonGenie.module.js"></script>
+    <script src="static/codonGenie/codonGenie.ctrl.js"></script>
+    <script src="static/result/result.module.js"></script>
+    <script src="static/result/result.directive.js"></script>
+    <script src="static/typeahead/typeahead.module.js"></script>
+    <script src="static/typeahead/typeahead.ctrl.js"></script>
+    <link href="static/favicon.ico" rel="shortcut icon">
 </head>
 <body>
-	<nav class="navbar navbar-default">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<a class="navbar-brand" href=".">
-					<span><img alt="GeneGenie Bioinformatics" src="static/favicon.ico" class="icon"></span>
-					CodonGenie
-				</a>
-			</div>
-		</div>
-	</nav>
-	
-	<div class="col-md-4">
-		<div class="panel panel-default">
-	  		<div class="result-panel panel-body">
-	  			<ul class="nav nav-tabs">
-					<li role="presentation" data-ng-class="{active: ctrl.query.mode == 'aminoAcids'}">
-						<a data-ng-click="ctrl.query.mode = 'aminoAcids'">Design</a>
-					</li>
-					<li role="presentation" data-ng-class="{active: ctrl.query.mode == 'codon'}">
-						<a data-ng-click="ctrl.query.mode = 'codon'">Analyse</a>
-					</li>
-				</ul>
-				<form data-ng-submit="ctrl.submit()" class="form-horizontal" role="form" name="form">
-					<fieldset data-ng-disabled="ctrl.isCalculating">
-						<div class="row" data-ng-show="ctrl.query.mode == 'aminoAcids'">
-							<div class="aa non-polar">
-								<div class="aa-label">Non-polar</div>
-								<div>
-									<button data-ng-click="ctrl.toggle('A')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('A')}" class="btn-aa">A</button>
-									<button data-ng-click="ctrl.toggle('F')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('F')}" class="btn-aa">F</button>
-									<button data-ng-click="ctrl.toggle('G')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('G')}" class="btn-aa">G</button>
-									<button data-ng-click="ctrl.toggle('I')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('I')}" class="btn-aa">I</button>
-									<button data-ng-click="ctrl.toggle('L')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('L')}" class="btn-aa">L</button>
-									<button data-ng-click="ctrl.toggle('M')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('M')}" class="btn-aa">M</button>
-									<button data-ng-click="ctrl.toggle('P')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('P')}" class="btn-aa">P</button>
-									<button data-ng-click="ctrl.toggle('V')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('V')}" class="btn-aa">V</button>
-									<button data-ng-click="ctrl.toggle('W')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('W')}" class="btn-aa">W</button>
-								</div>
-							</div>
-							<div class="aa polar">
-								<div class="aa-label">Polar</div>
-								<div>
-									<button data-ng-click="ctrl.toggle('C')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('C')}" class="btn-aa">C</button>
-									<button data-ng-click="ctrl.toggle('N')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('N')}" class="btn-aa">N</button>
-									<button data-ng-click="ctrl.toggle('Q')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('Q')}" class="btn-aa">Q</button>
-									<button data-ng-click="ctrl.toggle('S')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('S')}" class="btn-aa">S</button>
-									<button data-ng-click="ctrl.toggle('T')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('T')}" class="btn-aa">T</button>
-									<button data-ng-click="ctrl.toggle('Y')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('Y')}" class="btn-aa">Y</button>
-								</div>
-							</div>
-							<div class="aa acidic">
-								<div class="aa-label">Acidic</div>
-								<div>
-									<button data-ng-click="ctrl.toggle('D')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('D')}" class="btn-aa">D</button>
-									<button data-ng-click="ctrl.toggle('E')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('E')}" class="btn-aa">E</button>
-								</div>
-							</div>
-							<div class="aa basic">
-								<div class="aa-label">Basic</div>
-								<div>
-									<button data-ng-click="ctrl.toggle('H')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('H')}" class="btn-aa">H</button>
-									<button data-ng-click="ctrl.toggle('K')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('K')}" class="btn-aa">K</button>
-									<button data-ng-click="ctrl.toggle('R')" data-ng-class="{selected: ctrl.query.aminoAcids.includes('R')}" class="btn-aa">R</button>
-								</div>
-							</div>
-						</div>
-						<div class="row" data-ng-show="ctrl.query.mode == 'codon'">
-							<label class="col-xs-3 col-form-label">Codon:</label>
-							<div class="col-xs-9">
-								<input type="text" class="form-control uppercase" 
-									data-ng-model="ctrl.query.codon"
-									data-ng-pattern="ctrl.codon_pattern"
-									data-ng-disabled="ctrl.query.mode != 'codon'"
-									data-ng-required="ctrl.query.mode == 'codon'"
-									maxlength="3"
-									placeholder="Codon"
-									autocomplete="off">
-							</div>
-						</div>
-						<div class="row">
-							<label class="col-xs-3 col-form-label">Organism:</label>
-							<div>
-								<div class="col-xs-9" data-ng-controller="typeaheadCtrl as typeahead_ctrl">
-									<input type="text" class="form-control"
-										data-ng-init="typeahead_ctrl.url='/organisms/'"
-										data-ng-model="ctrl.query.organism"
-										placeholder="Organism"
-										required
-										autocomplete="off"
-										uib-typeahead="organism as organism.name for organism in typeahead_ctrl.getItem($viewValue)"
-										typeahead-min-length="4"
-										typeahead-editable="false">  
-								</div>
-							</div>
-						</div>
-					</fieldset>
-				</form>
-	  		</div>
-		</div>
-	</div>
-	
-	<div class="col-md-8" data-ng-show="ctrl.results()">
-		<result-panel results="ctrl.results()"></result-panel>
-	</div>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href=".">
+                <span><img alt="GeneGenie Bioinformatics"
+                           class="icon" src="static/favicon.ico"></span>
+                CodonGenie
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="col-md-4">
+    <div class="panel panel-default">
+        <div class="result-panel panel-body">
+            <ul class="nav nav-tabs">
+                <li data-ng-class="{active: ctrl.query.mode == 'aminoAcids'}"
+                    role="presentation">
+                    <a data-ng-click="ctrl.query.mode = 'aminoAcids'">Design</a>
+                </li>
+                <li data-ng-class="{active: ctrl.query.mode == 'codon'}"
+                    role="presentation">
+                    <a data-ng-click="ctrl.query.mode = 'codon'">Analyse</a>
+                </li>
+            </ul>
+            <form class="form-horizontal" data-ng-submit="ctrl.submit()"
+                  name="form" role="form">
+                <fieldset data-ng-disabled="ctrl.isCalculating">
+                    <div class="row"
+                         data-ng-show="ctrl.query.mode == 'aminoAcids'">
+                        <div class="aa non-polar">
+                            <div class="aa-label">Non-polar</div>
+                            <div>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('A')}"
+                                        data-ng-click="ctrl.toggle('A')">A
+                                </button>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('F')}"
+                                        data-ng-click="ctrl.toggle('F')">F
+                                </button>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('G')}"
+                                        data-ng-click="ctrl.toggle('G')">G
+                                </button>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('I')}"
+                                        data-ng-click="ctrl.toggle('I')">I
+                                </button>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('L')}"
+                                        data-ng-click="ctrl.toggle('L')">L
+                                </button>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('M')}"
+                                        data-ng-click="ctrl.toggle('M')">M
+                                </button>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('P')}"
+                                        data-ng-click="ctrl.toggle('P')">P
+                                </button>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('V')}"
+                                        data-ng-click="ctrl.toggle('V')">V
+                                </button>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('W')}"
+                                        data-ng-click="ctrl.toggle('W')">W
+                                </button>
+                            </div>
+                        </div>
+                        <div class="aa polar">
+                            <div class="aa-label">Polar</div>
+                            <div>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('C')}"
+                                        data-ng-click="ctrl.toggle('C')">C
+                                </button>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('N')}"
+                                        data-ng-click="ctrl.toggle('N')">N
+                                </button>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('Q')}"
+                                        data-ng-click="ctrl.toggle('Q')">Q
+                                </button>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('S')}"
+                                        data-ng-click="ctrl.toggle('S')">S
+                                </button>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('T')}"
+                                        data-ng-click="ctrl.toggle('T')">T
+                                </button>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('Y')}"
+                                        data-ng-click="ctrl.toggle('Y')">Y
+                                </button>
+                            </div>
+                        </div>
+                        <div class="aa acidic">
+                            <div class="aa-label">Acidic</div>
+                            <div>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('D')}"
+                                        data-ng-click="ctrl.toggle('D')">D
+                                </button>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('E')}"
+                                        data-ng-click="ctrl.toggle('E')">E
+                                </button>
+                            </div>
+                        </div>
+                        <div class="aa basic">
+                            <div class="aa-label">Basic</div>
+                            <div>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('H')}"
+                                        data-ng-click="ctrl.toggle('H')">H
+                                </button>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('K')}"
+                                        data-ng-click="ctrl.toggle('K')">K
+                                </button>
+                                <button class="btn-aa"
+                                        data-ng-class="{selected: ctrl.query.aminoAcids.includes('R')}"
+                                        data-ng-click="ctrl.toggle('R')">R
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" data-ng-show="ctrl.query.mode == 'codon'">
+                        <label class="col-xs-3 col-form-label">Codon:</label>
+                        <div class="col-xs-9">
+                            <input autocomplete="off" class="form-control uppercase"
+                                   data-ng-disabled="ctrl.query.mode != 'codon'"
+                                   data-ng-model="ctrl.query.codon"
+                                   data-ng-pattern="ctrl.codon_pattern"
+                                   data-ng-required="ctrl.query.mode == 'codon'"
+                                   maxlength="3"
+                                   placeholder="Codon"
+                                   type="text">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-xs-3 col-form-label">Organism:</label>
+                        <div>
+                            <div class="col-xs-9"
+                                 data-ng-controller="typeaheadCtrl as typeahead_ctrl">
+                                <input autocomplete="off" class="form-control"
+                                       data-ng-init="typeahead_ctrl.url='/organisms/'"
+                                       data-ng-model="ctrl.query.organism"
+                                       placeholder="Organism"
+                                       required
+                                       type="text"
+                                       typeahead-editable="false"
+                                       typeahead-min-length="4"
+                                       uib-typeahead="organism as organism.name for organism in typeahead_ctrl.getItem($viewValue)">
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-8" data-ng-show="ctrl.results()">
+    <result-panel results="ctrl.results()"></result-panel>
+</div>
 </body>
 </html>

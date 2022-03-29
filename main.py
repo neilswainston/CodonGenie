@@ -16,9 +16,10 @@ import sys
 import traceback
 import uuid
 
-from codon_genie.codon_genie import CodonSelector, get_codon_usage_organisms
 from flask import Flask, jsonify, request, Response
 
+from codon_genie.codon_selector import CodonSelector
+from codon_genie.codon_utils import get_codon_usage_organisms
 
 # Configuration:
 DEBUG = True

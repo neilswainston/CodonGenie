@@ -28,7 +28,7 @@ class CodonGenieClient():
     def get_codons(self, amino_acids, taxonomy_id):
         '''Get codons.'''
         url = self.__url + \
-            'codons?aminoAcids=%s&organism=%s' % (amino_acids, taxonomy_id)
+              'codons?aminoAcids=%s&organism=%s' % (amino_acids, taxonomy_id)
 
         return _get_json(url)
 

@@ -5,12 +5,12 @@ All rights reserved.
 
 @author:  neilswainston
 '''
-# pylint: disable=invalid-name
-from collections import defaultdict
 import os
 import tarfile
 import tempfile
 import urllib
+# pylint: disable=invalid-name
+from collections import defaultdict
 
 
 class TaxonomyFactory():
