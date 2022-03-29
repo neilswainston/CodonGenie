@@ -8,7 +8,7 @@ All rights reserved.
 # pylint: disable=too-many-public-methods
 import unittest
 
-from codon_genie.codon_genie import CodonSelector
+from codon_genie.codon_selector import CodonSelector
 
 
 class Test(unittest.TestCase):
