@@ -162,7 +162,8 @@
                     <div class="row" data-ng-show="ctrl.query.mode == 'codon'">
                         <label class="col-xs-3 col-form-label">Codon:</label>
                         <div class="col-xs-9">
-                            <input autocomplete="off" class="form-control uppercase"
+                            <input autocomplete="off"
+                                   class="form-control uppercase"
                                    data-ng-disabled="ctrl.query.mode != 'codon'"
                                    data-ng-model="ctrl.query.codon"
                                    data-ng-pattern="ctrl.codon_pattern"

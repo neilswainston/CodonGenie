@@ -11,7 +11,6 @@ import operator
 import os.path
 import random
 import re
-import tempfile
 import urllib.request
 
 from codon_genie import ncbi_tax_utils, seq_utils
