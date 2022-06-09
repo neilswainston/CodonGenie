@@ -196,17 +196,11 @@ def get_codon_usage_organisms(expand=False, write=False):
     filepath = os.path.join(destination, filename)
 
     if not os.path.exists(filepath):
-        # Download:
-        if not os.path.exists(destination):
-            os.makedirs(destination)
-
-        url = 'ftp://ftp.kazusa.or.jp/pub/codon/current/species.table'
-        tmp = tempfile.NamedTemporaryFile(delete=False)
-
-        urllib.request.urlretrieve(url, tmp.name)
-
         # Read:
-        codon_orgs = _read_codon_usage_orgs_file(tmp.name)
+        species_filename = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), 'species.table')
+
+        codon_orgs = _read_codon_usage_orgs_file(species_filename)
 
         # Expand:
         if expand:
